@@ -1,0 +1,283 @@
+1	Keitä	PRON	0	root
+2	he	PRON	1	nsubj
+3	ovat	AUX	1	cop 	
+4	?	PUNCT	1	punct
+
+1	Pieni	ADJ	4	amod
+2   kahden  NUM	3	nummod   
+3   minareetin  NOUN	4	nmod:poss
+4	kaupunki    NOUN	5	nsubj
+5   lipuu	VERB	0	root
+6	ohi	ADV 5	advmod	
+7	.	PUNCT	5	punct
+
+1	Olin	AUX	3	cop       
+2	vain	ADV	3	advmod
+3	poika	NOUN    0	root
+4   ,	PUNCT	5	punct
+5   jolla	PRON	3	acl:relcl
+6   oli	AUX	5	cop:own
+7   mutaiset	ADJ	8	amod
+8   kengät	NOUN	6	nsubj:cop	
+9	.	PUNCT	5	punct
+
+1	Shenzhenin	NOUN	2	nmod:poss
+2	liikennepoliisi	NOUN	4	nsubj
+3	on	AUX	4	aux
+4	päätynyt	VERB	0	root
+5	epätavanomaisiin	ADJ	6	amod
+6	rangaistuksiin	NOUN	4	obl	
+7	aiemmin	ADV	4	advmod
+8	.	PUNCT	4	punct
+
+1	Tulivuorten	NOUN	2	nmod:gobj
+2	tutkimista	NOUN	3	obj	
+3	kutsutaan	VERB	0	root
+4	vulkanologiaksi	NOUN	3	xcomp:ds
+5	.	PUNCT	3	punct
+
+1	Se	PRON	2	obj
+2	toteutettiin	VERB	0	root
+3	aivan	ADV	6	advmod	
+4	Meksikon	NOUN	5	nmod:poss
+5	rannikon	NOUN	6	nmod:poss
+6   tuntumassa  NOUN	2	obl	
+7   huhtikuusta NOUN	2	obl    
+8   kesäkuuhun  NOUN	2	obl
+9	.	PUNCT	2	punct
+
+1	"	PUNCT	4	punct
+2	Hänen	PRON	3	nmod:poss
+3	äänensä	NOUN	4	nsubj
+4	kuului	VERB	0	root
+5   kirjaimellisesti    ADV	4	advmod
+5	ympäri	ADP	6 case
+6	maailmaa	NOUN	4	obl
+9	"	PUNCT	4	punct
+10	,	PUNCT	12	punct
+11	Leive	PROPN	12	nsubj
+12	sanoi	VERB	4 parataxis
+13	.	PUNCT	4 punct
+
+1	Silminnäkijä   NOUN	2	nsubj
+2	kertoi	VERB	0	root
+4	poliisille	NOUN	2	obl
+5	,	PUNCT	9	punct
+6   että    SCONJ	9	mark
+7	uhri   NOUN	9	nsubj
+8	oli AUX	9	aux
+9	hyökännyt	VERB	2	ccomp		
+10	epäillyn	NOUN	9
+12	kimppuun	ADV	9	advmod
+13	huhtikuussa	NOUN	9	obl
+14	.	PUNCT	2	punct
+
+1	Se	PRON	3	nsubj:cop
+2	on	AUX	3	cop
+3	selkeintä   ADJ	0	root
+4	silloin	ADV	3	advmod
+5	,   PUNCT	12	punct
+6	kun	SCONJ	12	mark
+7	kuuluisuuden	NOUN	8	nmod:poss
+8	nimi	NOUN	12	nsubj:cop
+9	on	AUX	12	cop
+10	aluksi	ADV	12	advmod
+11	melko	ADV	12	advmod
+12	harvinainen	ADJ	3	advcl
+13	.   PUNCT	3	punct
+
+1	Tämä	PRON	4	nsubj
+2	ei	AUX	4	aux
+3	ole AUX	4	aux
+4	estänyt VERB	0	root
+5	sijoittajia NOUN	6	nsubj
+6	laittamaan  VERB	4	xcomp	
+7   innolla NOUN	6	obl
+8	rahojaan	NOUN	6	obj
+9	rahastoihin NOUN	6	obl
+10	.   PUNCT	4	punct
+
+1	Tämä	PRON	2	det
+2	yhteensopimattomuus NOUN	10	nsubj:cop
+3	talouden    NOUN	4	nmod:poss
+4	tietojen	NOUN	2	nmod
+5	ja	CCONJ	7	cc
+6	poliittisen	ADJ	7	amod
+7	retoriikan	NOUN	4	conj
+8	välillä ADP	4	case
+9	on	AUX	10	cop
+10	tuttua	ADJ	0	root
+11	,	PUNCT	15	punct
+12	tai	CCONJ	15	cc
+13	sen	PRON	15	nsubj
+14	pitäisi	AUX	15	aux
+15	olla	VERB	10	conj
+16	.   PUNCT	10	punct
+
+1	Toteutettavuustutkimuksessa NOUN	2	obl
+2	arvioidaan	VERB	0	root
+3	,   PUNCT	6	punct
+4	että	SCONJ	6	mark
+5	matkustajilta	NOUN	6 obl	
+6	kuluisi	VERB	2	ccomp	
+7	noin	ADV	8	advmod
+8	neljä	NUM	9	nummod
+9	minuuttia   NOUN	6	obj
+10	Potomac-joen	PROPN	11	nmod:gobj
+12	ylittämiseen	NOUN	9	nmod
+13	korihissillä	NOUN	12	obl
+14	.	PUNCT	2	 punct
+
+
+1	Hän	PRON    2   nsubj
+2	keräsi	VERB    0   root
+3	kortteja	NOUN    2   obj
+4	ja	CCONJ   5   cc   
+5	vaihtoi	VERB    2   conj
+6	niitä	PRON    5   obj
+7	muiden	PRON    8   det  
+8	poikien	DET     5   obl
+9	kanssa	ADP 8   case
+10	.	PUNCT   2   punct
+
+1	tästä	PRON	2	det	
+2	rikoksesta	NOUN	3	obl
+3	seuraa	VERB	0	root
+4	viiden	NUM	5	nummod
+5	vuoden	NOUN	6	nmod:poss
+6	vankeusrangaistus	NOUN	3	nsubj
+7	.	PUNCT	3	punct
+
+1	uutiset	NOUN	2	obj
+2	kuljetettiin    VERB	0	root
+3   maakunnan   NOUN	5	nmod:poss
+4   jokaiseen   PRON	5	det
+5	kylään  NOUN	2	obl
+6	.	PUNCT	2	punct
+
+1	pyöritän	VERB	0	root
+2	näitä	PRON	3	det
+3	ajatuksia	NOUN	1	obj
+4	mielessäni	NOUN	1	obl
+5	.	PUNCT	1	punct
+
+1	Adam	PROPN	3	obj
+2	olisi	AUX	3	aux:pass
+3	siirretty	VERB	0	root
+4	ikuiseen	ADJ	5	amod
+5	elämään	NOUN	3	obl	
+6	.	PUNCT	3	punct
+
+1	kehykset	NOUN	3	nsubj	
+2	olivat	AUX	3	aux
+3	mädäntyneet	VERB	0	root
+4	ja 	CCONJ	7	cc
+5	ne	PRON	7	obj
+6	piti	AUX	7	aux
+7	vaihtaa	VERB	3	conj
+8	.	PUNCT
+
+1	hän	PRON    3	nsubj
+2	oli	AUX 3	cop
+3	raivoissaan	ADJ 0	root
+4	,	PUNCT   9	punct
+5	että	SCONJ   9	mark
+6	tämä	PRON    8	det
+7	tytön	NOUN    8	nmod:poss
+8	heitukka	NOUN    9	nsubj    
+9	kehtaakin	VERB    3	ccomp
+10	tehdä	VERB    9	xcomp
+11	hänestä	PRON    10	obl
+12	typeryksen	NOUN    10  obj
+13	luokan	NOUN    14	nmod:poss
+14	edessä	ADP 13	case
+15	.	PUNCT   3	punct
+
+1	hänen	PRON	4	nummod:poss    
+2	valitsijamiehistöltä	NOUN	4	obl
+3	saamansa	VERB	4	acl
+4	äänivuory	NOUN	5	nsubj
+5	hämärsi	VERB	0	root
+6	tiukkaa	ADJ	7	amod
+7	voittoa	NOUN	5	obj
+8	kansanäänestyksessä	NOUN	7	obl
+9	,	PUNCT	12	punct
+10	jossa	PRON	12	obl
+11	hän	PRON	12	nsubj
+12	sai	VERB	8	acl:relcl:
+13	vain	ADV	14	advmod
+14	43	NUM	15	nummod
+15	%	SYM	12	obj
+16	kaikista	17	det
+17	äänistä	NOUN
+18	.	PUNCT	5	punct
+
+1	Yhdysvaltain	PROPN	2	nmod:poss
+2	sotilaat NOUN	3	nsubj
+3	kantavat	VERB	0	root	
+4	nyt	ADV	3	advmod
+5	mukanaan	ADV	3	obl
+6	atropiinia	NOUN	3	obj
+7	ja	CCONJ	8	cc
+8	autoinjektoreita	NOUN	6	conj
+9	ensiapupakkauksissaan	NOUN	3	obl
+10	organofosfaattihermomyrkytystapauksien	NOUN	3	obl
+11	varalta	ADP	11	case
+12	.	PUNCT	3	punct
+
+1	pitkällä	ADJ	2	amod
+2	aikavälillä	NOUN	6	obl
+3	voi	AUX	6	aux
+4	hän	PRON	6	nsubj
+5	taidolla	NOUN	6	obl
+6	saavuttaa	VERB	0	root
+7	sen	PRON	6	obj
+8	,	PUNCT	13	punct
+9	johon	PRON	13	obl
+10	hän	PRON	13	nsubj
+11	ei	AUX V	13	aux
+12	väkipakolla NOUN	13	obl
+13	kykene VERB	7	acl:relcl	
+14	lyhyellä	ADJ	15	amod
+15	aikavälillä	NOUN	13	obl
+16	.	PUNCT	6	punct
+
+1	on	AUX	2	aux
+2	sanottu	VERB	0	root
+3	,	PUNCT	14	punct
+4	että	SCONJ	14	mark
+5	vain	ADV	6	advmod
+6	luokkayhteiskunta	NOUN	14	nsubj
+7	,	PUNCT	9	punct	
+8	jonka	PRON	9	nmod:poss
+9	huipulla	NOUN	6	acl:relcl
+10	on	AUX	9	cop
+11	yläluokka	NOUN	9	nsubj:cop
+12	,	PUNCT	9	punct
+13	voi	AUX	14	aux
+14	tuottaa	VERB	2	ccomp
+15	taideteoksia	NOUN	14	obj
+16	.	PUNCT	2	punct
+
+1	hänen	PRON	3	nmon:poss
+2	nerokas	ADJ	3	amod
+3	selityksensä	NOUN	0	root
+4	,	PUNCT	10	punct
+5	jonka	PRON	10	obl
+6	mukaan	ADP	5	case
+7	hän	PRON	10	nsubj
+8	ei	AUX	10	aux
+9	olisi	AUX	10	aux	
+10	polttannut	VERB    3	acl:relcl
+11	kirkkoa	NOUN	10	obj
+12	,	PUNCT	17	punct
+13	jos	SCONJ	17	mark
+14	hän	PRON	17	nsubj
+15	ei	AUX 17	aux
+16	olisi	AUX 17	aux
+17	uskonut	VERB	10	advcl
+18	piispan	NOUN	20	nsubj:cop	
+19	olevan	AUX	20	cop
+20	sen	PRON	17	ccomp
+21	sisällä	ADP	20	case
+22	.	PUNCT	3	punct
