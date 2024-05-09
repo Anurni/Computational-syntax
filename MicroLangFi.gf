@@ -138,7 +138,7 @@ lin dirty_A = mkA "likainen" ;
 lin dog_N = mkN "koira" ;
 lin drink_V2 = mkV2 "juoda" ; --(mkV "drink" "drank" "drunk") ;
 lin eat_V2 = mkV2 "syödä" ;   --(mkV "eat" "ate" "eaten") ;
-lin find_V2 = mkV2 "löytää" ; --(mkV "find" "found" "found") ;
+lin find_V2 = mkV2 "löytää" "löydä" "löytänyt" "löytäneet" ; --(mkV "find" "found" "found") ;
 lin fire_N = mkN "tuli" ;
 lin fish_N = mkN "kala" ;
 lin flower_N = mkN "kukka" ;
@@ -167,13 +167,13 @@ lin now_Adv = mkAdv "nyt" ;
 lin old_A = mkA "vanha" ;
 -- lin paris_PN = mkPN "Paris" ;
 lin play_V = mkV "pelata" ;
-lin read_V2 = mkV2 "lukea" ; --(mkV "read" "read" "read") ;
+lin read_V2 = mkV2 "lukea" "lue" "lukenut" "lukeneet" ; --(mkV "read" "read" "read") ;
 lin ready_A = mkA "valmis" "valmiit" ;
 lin red_A = mkA "punainen" ;
 lin river_N = mkN "joki" ;
-lin run_V = mkV "juosta" ;
+lin run_V = mkV "juosta" "juokse" "juossut" "juosseet" ;
 lin sea_N = mkN "meri" ;
-lin see_V2 = mkV2 "nähdä" ; --(mkV "see" "saw" "seen") ;
+lin see_V2 = mkV2 "nähdä" "näe" "nähnyt" "nähneet"; --(mkV "see" "saw" "seen") ;
 lin ship_N = mkN "laiva" ;
 lin sleep_V = mkV "nukkua" ;
 lin small_A = mkA "pieni" "pienet" ;
@@ -183,7 +183,7 @@ lin teach_V2 = mkV2  "opettaa" ;     --(mkV "teach" "taught" "taught") ;
 lin train_N = mkN "juna" ;
 lin travel_V = mkV "matkustaa" ;
 lin tree_N = mkN "puu" ;
-lin understand_V2 = mkV2 "ymmärtää" ;       --(mkV "understand" "understood" "understood") ;
+lin understand_V2 = mkV2 "ymmärtää" "ymmärrä" "ymmärtänyt" "ymmärtäneet" ;       --(mkV "understand" "understood" "understood") ;
 lin wait_V2 = mkV2 "odottaa" ;
 lin walk_V = mkV "kävellä" ;
 lin warm_A = mkA "lämmin" "lämpimät" ;
@@ -210,16 +210,17 @@ oper
     mkA : Str -> A
     = \s -> lin A {s = s} ;
     mkA : Str -> Str -> A
-    = sg,pl -> lin A (irregA sg pl)
+    = \sg,pl -> lin A (irregA sg pl) ;
   } ;
 
-
   mkV = overload {
-    mkV : (inf : Str) -> V  -- predictable verb, e.g. play-plays, cry-cries, wash-washes
-      = \s -> lin V (smartVerb s) ;
-    --mkV : (inf,pres,part : Str) -> V  -- probably won't need this one with Finnish
-    --= \inf,pres,part -> lin V (irregVerb inf pres part) ;
-    } ;
+    mkV : (inf : Str) -> V  
+      = \s -> lin V (smartVerb s) ; --most of our Finnish verbs go through the pattern checking in smartVerb
+    mkV : Str -> Str -> Str -> Str -> V  --only needed with a few of the forms?
+      = \inf, stem, persg, perpl -> lin V (irregVerb inf stem persg perpl) ;
+  } ;
+
+ --won't be needing most of these with Finnish:
 
   --mkV2 = overload {
   --  mkV2 : Str -> V2          -- predictable verb with direct object, e.g. "wash"
@@ -238,4 +239,4 @@ oper
   --mkPrep : Str -> Prep
   --  = \s -> lin Prep {s = s} ;
 
-}
+--}

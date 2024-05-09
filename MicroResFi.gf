@@ -3,7 +3,7 @@ resource MicroResFi = open Prelude in {
 param
   Number = Sg | Pl ;
   Case = Nom | Acc | Gen | Par | Ine | Ela | Ill | Ade | Abl | All | Ess | Tra | Abe ; --left out two cases: instruktiivi and komitatiivi, lets see whether or not to include them later
-  Tense = Inf | Pres | Per | Pkp ;
+  Tense = Pres | Per | Pkp ;
   Person = Per1 | Per2 | Per3 ;
 
 
@@ -39,6 +39,29 @@ oper
     x + "a" => "aa";
     x + ("i"|"e") => "ee";
     x + "ä" => "ää"
+  };
+
+  pastParticipleVowelHarmony : Str -> Str ;
+  pastParticipleVowelHarmony = \character -> case character of {
+    "ä" => "y";
+    "a" => "u"
+  };
+
+  verbHelpVowelHarmony : Str -> Str ;
+  verbHelpVowelHarmony = \verb -> case verb of {
+    x + "o" => "o";
+    x + "a" => "a";
+    x + "ä" => "ä";
+    x + "u" => "u"
+  };
+
+  ekstraKonsonantti : Str -> Str ;
+  ekstraKonsonantti = \verb -> case last verb of {
+    "l" => "l";
+    "t" => "t";
+    "k" => "k";
+    "p" => "p";
+    "n" => "n"
   };
 
 
@@ -872,76 +895,74 @@ mkA : Str -> Adjective = --luckily most of the adjectives in the lexicon are rel
 } ;
 
 Verb : Type = {s : Number => Person => Tense => Str} ;
-  
-mkVerb : (inf, pres, impf, per, pkp : Str) -> Verb
-  = \inf, pres, impf, per, pkp -> {
+
+ -- we need to take into consideration that the past participle is different in singular (persg) and plural personas (perpl)  
+
+mkVerb : (stem, persg, perpl : Str) -> Verb
+  = \stem, persg, perpl -> {
     s = table {
       Sg => table {
         Per1 => table {
-            Inf => inf ;
-            Pres => pres + "n" ;
-            Impf => inf + "in" ;
-            Per => "olen" + inf ;
-            Pkp => "olin" + inf
+            Pres => stem + "n" ;
+            Per => "olen" + "_" + persg ; --how to add space?
+            Pkp => "olin" + "_" + persg 
       } ;
         Per2 => table {
-            Inf => inf ;
-            Pres => inf + "t" ;
-            Impf => inf + "it" ;
-            Per => "olet" + inf ;
-            Pkp => "olit" + inf
+            Pres => stem + "t" ;
+            Per => "olet" + "_" + persg ;
+            Pkp => "olit" + "_" + persg
         } ;
         Per3 => table {
-            Inf => inf ;
-            Pres => inf  ;
-            Impf => inf + "i" ;
-            Per => "on" + inf ;
-            Pkp => "oli" + inf
+            Pres => stem  ;
+            Per => "on" + "_" + persg ;
+            Pkp => "oli" + "_" + persg
       } 
       };
       Pl => table {
         Per1 => table {
-            Inf => inf ;
-            Pres => inf + "mme" ;
-            Impf => inf + "imme" ;
-            Per => "olemme" + inf ;
-            Pkp => "olimme" + inf
+            Pres => stem + "mme" ;
+            Per => "olemme" + "_" + perpl ;
+            Pkp => "olimme" + "_" + perpl
         } ;
         Per2 => table {
-            Inf => inf ;
-            Pres => inf + "t" ;
-            Impf => inf + "it" ;
-            Per => "olette" + inf ;
-            Pkp => "olitte" + inf
+            Pres => stem + "tte" ;
+            Per => "olette" + "_" +  perpl ;
+            Pkp => "olitte" + "_" + perpl
         } ;
         Per3 => table {
-            Inf => inf ;
-            Pres => inf + "t" ;
-            Impf => inf + "it" ;
-            Per => "ovat" + inf ;
-            Pkp => "olivat" + inf
+            Pres => stem + "vat" ;
+            Per => "ovat" + "_" + perpl ;
+            Pkp => "olivat" + "_" + perpl
           } 
       }
     }
 } ;
 
-
--- not even sure if we'll be able to use this with Finnish
-  regVerb : (inf : Str) -> Verb = \inf ->
-  mkVerb inf (inf + "s") (inf + "ed") (inf + "ed") (inf + "ing") ;
+-- this one will only be used with a couple of the verbs ? could not get this to work
+  irregVerb : Str -> Str -> Str -> Str -> Verb 
+  = \inf, stem, persg, perpl -> 
+      mkVerb stem persg perpl ;
 
   -- regular verbs with predictable variations
-  smartVerb : Str -> Verb = \inf -> case inf of {
-   tul + ("la" | "lä" | "na" | "nä" | "ra" | "rä" | "ta" | "tä")  => mkVerb inf (tul + "en") (tul + "i") (tul + "lut") (tul + "lut") ;
-   juo  +  ("da" | "dä") =>  mkVerb inf (juo + "n") (juo + "n") (juo + "ied") (juo + "ing");  -- perusmuodon lopussa on da tai dä. juoda, syödä, uida, nähdä, tehdä
-   pela  +  ("a" | "ä")  => regVerb inf     -- perusmuodon lopussa on a tai ä.  rikkoa, lukea, ymmärtää, mennä, ostaa, löytää, tappaa. elää, rakastaa, nukkua, opettaa, matkustaa, odottaa
+  -- we will stick to the present and present past and past perfect tenses
+  -- we need to take into consideration that the past participle is different in singular and plural personas
+  smartVerb : Str -> Verb = \inf -> 
+    case inf of {
+   x + ("ata"|"ätä") => mkVerb (x + verbHelpVowelHarmony(inf) + verbHelpVowelHarmony(inf)) (x + verbHelpVowelHarmony(inf) + "nnut") (x + verbHelpVowelHarmony(inf) + "nneet") ;       --verbtype  4 ends in ata ätä, will go through changes in the stem   
+   x + "tt" + y => mkVerb (x + "t" + verbHelpVowelHarmony(init inf)) (init inf + "nut") (init inf + "neet");  --verbs ending in two vowels that require variation in the consonant stem  -opettaa verbtype 1
+   x + "pp" + y => mkVerb (x + "p" + verbHelpVowelHarmony(init inf)) (init inf + "nut") (init inf + "neet");  --verbs ending in two vowels that require variation in the consonant stem  -tappaa verbtype 1
+   x + "kk" + y => mkVerb (x + "k" + verbHelpVowelHarmony(init inf)) (init inf + "nut") (init inf + "neet");  --verbs ending in two vowels that require variation in the consonant stem  -rikkoa verbtype 1
+   rakast + ("aa"| "öö"| "uu"| "oo" | "ää"| "ea"| "yy") => mkVerb (init inf) (rakast + verbHelpVowelHarmony(last inf) + "n" + pastParticipleVowelHarmony(last inf) + "t") (rakast + verbHelpVowelHarmony(last inf) + "neet") ;
+   tul + ("la" | "lä" | "nä" | "rä" | "ta" | "tä")  => mkVerb (tul + "e") (tul + ekstraKonsonantti(init inf) + pastParticipleVowelHarmony(last inf) + "t") (tul + ekstraKonsonantti(init inf) + "eet") ;   --verbtype 3 - ends in -la, -lä; -na, -nä; -ra, -rä; -sta, -stä
+   juo  +  ("da" | "dä") =>  mkVerb juo (juo + "n" + pastParticipleVowelHarmony(last inf) + "t") (juo + "neet")   -- verbtype 2. ends in -da or -dä. juoda, syödä, uida, nähdä, tehdä
+   --pela  +  ("a" | "ä")  => regVerb inf     -- perusmuodon lopussa on a tai ä.  rikkoa, lukea, ymmärtää, mennä, ostaa, löytää, tappaa. elää, rakastaa, nukkua, opettaa, matkustaa, odottaa
    } ;
 
   -- normal irregular verbs e.g. drink,drank,drunk
-  --irregVerb : (inf,past,pastpart : Str) -> Verb =
-  --  \inf,past,pastpart ->
+  --irregVerb : (inf,stem, persg, perpl : Str) -> Verb =
+  --  \inf, stem,persg,perpl ->
   --    let verb = smartVerb inf
-  --    in mkVerb inf (verb.s ! PresSg3) past pastpart (verb.s ! PresPart) ;   
+  --    in mkVerb stem persg perpl ;   
 
   -- two-place verb with "case" as preposition; for transitive verbs, c=[]
   --Verb2 : Type = Verb ** {c : Str} ;
