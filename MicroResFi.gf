@@ -96,12 +96,14 @@ oper
             Nom => pl ; -- READY
             Acc => pl ; -- READY MAYBE??
             Gen => case sg of {  
+            x + "eä" => x + "eiden";  
             x + ("ka"| "i"|"ä"|"na"|"ra") => init sg + "ien" ; --poika poikien, tuli tulien viini viinien lehmä lehmien...
             x + ("o"|"a") => x + "ojen" ;
             x + "uu" => x + "uiden";
             ("r"| "n" | "t"| "s") => "ten"  --miesten, tytärten 
             } ;
             Par => case sg of {  
+            x + "eä" => x + "eitä"; 
             x + ("ka"|"na"|"ra") => init sg + "ia" ; --poika poikia, tuli tulia
             x + ("o"|"a") => init sg + "oja" ;
             x + "uu" => x + "uita";
@@ -119,43 +121,44 @@ oper
             _ => init sg + "oist" + vowelHarmony(last sg)
             };
             Ill => case sg of {  --vowel harmony needs to be taken into account
+            x + "eä" => x + "eisiin"; 
             x + "to" => x + "ihin" ; --back vowels
             x + ("a" | "sa"| "pi"| "va") => init sg + "oihin" ; --front vowels
             _ => init sg + "iin"
             };
             Ade => case sg of {
-              x + ("na"|"vä"|"sa"|"ra"|"rä"|"nen") => init sg + "ill" + vowelHarmony(last sg);
-              x + ("va") => init sg + "oill" + vowelHarmony(last sg);
+              x + ("mä"| "na"|"vä"|"rä"|"nen") => init sg + "ill" + vowelHarmony(last sg);
+              x + ("va"|"ra") => init sg + "oill" + vowelHarmony(last sg);
               x + "a" => init sg + "oill" + vowelHarmony(last sg);
               _ => sg + "ill" + vowelHarmony(last sg)
             };
             Abl => case sg of {
-              x + ("na"|"vä"|"sa"|"ra"|"rä"|"nen") => init sg + "ilt" + vowelHarmony(last sg);
-              x + ("va") => init sg + "oilt" + vowelHarmony(last sg);
+              x + ("mä"|"na"|"vä"|"sa"|"rä"|"nen") => init sg + "ilt" + vowelHarmony(last sg);
+              x + ("va"|"ra") => init sg + "oilt" + vowelHarmony(last sg);
               x + "a" => init sg + "oilt" + vowelHarmony(last sg);
               _ => sg + "ilt" + vowelHarmony(last sg)
             };
             All => case sg of {
               x + ("na"|"va"|"sa") => init sg + "oille";
-              x + ("rä"|"vä") => init sg + "ille";
+              x + ("rä"|"vä"|"mä") => init sg + "ille";
               x + "a" => init sg + "oill" + vowelHarmony(last sg);
               _ => sg + "ille"
             };
             Ess => case sg of {
               x + ("na"|"va"|"sa") => init sg + "oin" + vowelHarmony(last sg);
-              x + ("rä"|"vä") => init sg + "in" + vowelHarmony(last sg);
+              x + ("mä"|"rä"|"vä"|"nä") => init sg + "in" + vowelHarmony(last sg);
               x + "a" => init sg + "oin" + vowelHarmony(last sg);
               _ => sg + "in" + vowelHarmony(last sg)
             };
             Tra => case sg of {
               x + ("na"|"va"|"sa") => init sg + "oiksi";
-              x + ("rä"|"vä") => init sg + "iksi";
+              x + ("mä"|"rä"|"vä"|"nä") => init sg + "iksi";
               x + "a" => init sg + "oiksi";
               _ => sg + "iksi"
             };
             Abe => case sg of {
               x + ("na"|"va"|"sa") => init sg + "oitt" + vowelHarmony(last sg);
-              x + ("rä"|"vä") => init sg + "itt" + vowelHarmony(last sg);
+              x + ("mä"|"rä"|"vä"|"nä") => init sg + "itt" + vowelHarmony(last sg);
               x + "a" => init sg + "oitt" + vowelHarmony(last sg);
               _ => sg + "itt" + vowelHarmony(last sg)
             }
@@ -322,6 +325,7 @@ smartNoun : Str -> Noun = \sg -> {
         x + "nen" => x + "selle"
       } ;
       Ess => case sg of {
+        x + "ki" => x + "kina";
         x + "nen" => x + "sen" + otherVowelHarmony(sg) ;
         x + ("pi"|"a"|"o"|"u") => sg + "na" ;
         x + ("ä"|"ö"|"i"|"e") => x + "enä"
@@ -405,6 +409,7 @@ smartNoun : Str -> Noun = \sg -> {
       x + "nen" => x + "sten" ;
       x + ("a"|"o") => x + "ojen" ;
       x + "i" => sg + "en";
+      x + "ne" => x + "neiden";
       x + ("ö"| "u") => sg + "jen" 
       } ;
       Par => case sg of {
@@ -474,7 +479,7 @@ smartNoun : Str -> Noun = \sg -> {
       x + "kka" => x + "kkiin" ; --kk -> k
       x + "ppi" => x + "ppeihin" ; --pp -> p
       x + "tti" => x + "tteihin" ; --tt -> i
-      x + "i" => x + "iin" ; --some nouns ending in i in singular (like lapsi, vesi,) we have a problem here tho bc some of these are regular (like muki), need to check this
+      x + "i" => x + "in" ; --some nouns ending in i in singular (like lapsi, vesi,) we have a problem here tho bc some of these are regular (like muki), need to check this
       x + "s" => x + "ksiin" ; --kasvis, kasvikset
       x + "e" => x + "eisiin" ; -- virhe, virheet
       x + "uu" => sg + "uihin" ;
@@ -780,7 +785,7 @@ irregA : Str -> Str -> Adjective = --for irregular adjectives that have two form
   }
 };
 
-mkA : Str -> Adjective = --luckily most of the adjectives in the lexicon are relatively regular so we can use the regNoun oper for most of them
+mkAdjective : Str -> Adjective = --luckily most of the adjectives in the lexicon are relatively regular so we can use the regNoun oper for most of them
   \sg -> {
   s = table {
     Sg => table {
@@ -904,41 +909,41 @@ mkVerb : (stem, persg, perpl : Str) -> Verb
       Sg => table {
         Per1 => table {
             Pres => stem + "n" ;
-            Per => "olen" + "_" + persg ; --how to add space?
-            Pkp => "olin" + "_" + persg 
+            Per => "olen_" + persg ; --how to add space?
+            Pkp => "olin_" + persg 
       } ;
         Per2 => table {
             Pres => stem + "t" ;
-            Per => "olet" + "_" + persg ;
-            Pkp => "olit" + "_" + persg
+            Per => "olet_" + persg ;
+            Pkp => "olit_" + persg
         } ;
         Per3 => table {
             Pres => stem  ;
-            Per => "on" + "_" + persg ;
-            Pkp => "oli" + "_" + persg
+            Per => "on_" + persg ;
+            Pkp => "oli_" + persg
       } 
       };
       Pl => table {
         Per1 => table {
             Pres => stem + "mme" ;
-            Per => "olemme" + "_" + perpl ;
-            Pkp => "olimme" + "_" + perpl
+            Per => "olemme_" + perpl ;
+            Pkp => "olimme_" + perpl
         } ;
         Per2 => table {
             Pres => stem + "tte" ;
-            Per => "olette" + "_" +  perpl ;
-            Pkp => "olitte" + "_" + perpl
+            Per => "olette_" +  perpl ;
+            Pkp => "olitte_" + perpl
         } ;
         Per3 => table {
             Pres => stem + "vat" ;
-            Per => "ovat" + "_" + perpl ;
-            Pkp => "olivat" + "_" + perpl
+            Per => "ovat_" + perpl ;
+            Pkp => "olivat_" + perpl
           } 
       }
     }
 } ;
 
--- this one will only be used with a couple of the verbs ? could not get this to work
+-- this one will only be used with a couple of the verbs --> ymmärtää-nähdä-juosta-lukea-löytää
   irregVerb : Str -> Str -> Str -> Str -> Verb 
   = \inf, stem, persg, perpl -> 
       mkVerb stem persg perpl ;
@@ -957,24 +962,18 @@ mkVerb : (stem, persg, perpl : Str) -> Verb
    juo  +  ("da" | "dä") =>  mkVerb juo (juo + "n" + pastParticipleVowelHarmony(last inf) + "t") (juo + "neet")   -- verbtype 2. ends in -da or -dä. juoda, syödä, uida, nähdä, tehdä
    --pela  +  ("a" | "ä")  => regVerb inf     -- perusmuodon lopussa on a tai ä.  rikkoa, lukea, ymmärtää, mennä, ostaa, löytää, tappaa. elää, rakastaa, nukkua, opettaa, matkustaa, odottaa
    } ;
-
-  -- normal irregular verbs e.g. drink,drank,drunk
-  --irregVerb : (inf,stem, persg, perpl : Str) -> Verb =
-  --  \inf, stem,persg,perpl ->
-  --    let verb = smartVerb inf
-  --    in mkVerb stem persg perpl ;   
-
+ 
   -- two-place verb with "case" as preposition; for transitive verbs, c=[]
-  --Verb2 : Type = Verb ** {c : Str} ;
+    Verb2 : Type = Verb ** {c : Str} ;
 
-  --be_Verb : Verb = mkVerb "are" "is" "was" "been" "being" ; ---s to be generalized
+   be_Verb : Verb = irregVerb "olla" "ole" "ollut" "olleet" ; ---s to be generalized
 
 
 ---s a very simplified verb agreement function for Micro
   --agr2vform : Agreement -> VForm = \a -> case a of {
-  --  Agr Sg => PresSg3 ;
-  --  Agr Pl => Inf
-  --  } ;
+   --Agr Sg => Sg ;
+   --Agr Pl => Pl
+   --} ;
 
 };
 

@@ -77,27 +77,39 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
     --with_Prep = {s = "with"} ;
 
     minä_Pron = {
-      s = table {Nom => "minä" ; Acc => "minut"} ;
+      s = table {
+        Nom => "minä" ; 
+        Acc => "minut"} ;
       a = Agr Sg ;
       } ;
     sinä_Pron = {
-      s = table {Nom => "sinä" ; Acc => "sinut"} ;
+      s = table {
+        Nom => "sinä" ; 
+        Acc => "sinut"} ;
       a = Agr Sg ;
       } ;
     hän_Pron = {
-      s = table {Nom => "hän" ; Acc => "hänet"} ;
+      s = table {
+      Nom => "hän" ; 
+      Acc => "hänet"} ;
       a = Agr Sg ;
       } ;
     me_Pron = {
-      s = table {Nom => "me" ; Acc => "meidät"} ;
+      s = table {
+        Nom => "me" ; 
+        Acc => "meidät"} ;
       a = Agr Pl ;
       } ;
     te_Pron = {
-      s = table {Nom => "te" ; Acc => "teidät"} ;
+      s = table {
+        Nom => "te" ; 
+        Acc => "teidät"} ;
       a = Agr Pl ;
       } ;
     he_Pron = {
-      s = table {Nom => "he" ; Acc => "heidät"} ;
+      s = table {
+        Nom => "he" ; 
+        Acc => "heidät"} ;
       a = Agr Pl ;
       } ;
 
@@ -105,7 +117,7 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
 ---------------- Lexicon part -----------------------
 -----------------------------------------------------
 
-lin already_Adv = mkAdv "jo" ;
+--lin already_Adv = mkAdv "jo" ;
 lin animal_N = mkN "eläin" ;
 lin apple_N = mkN "omena" ; --REG
 lin baby_N = mkN "vauva" ; --REG
@@ -162,8 +174,8 @@ lin love_V2 = mkV2 "rakastaa" ; --(mkV "love") ;
 lin man_N = mkN "mies" "miehet" ;
 lin milk_N = mkN "maito" ;
 lin music_N = mkN "musiikki" ;
-lin new_A = mkA "uusi" "uudet" ;
-lin now_Adv = mkAdv "nyt" ;
+--lin new_A = mkA "uusi" "uudet" ;
+--lin now_Adv = mkAdv "nyt" ;
 lin old_A = mkA "vanha" ;
 -- lin paris_PN = mkPN "Paris" ;
 lin play_V = mkV "pelata" ;
@@ -194,6 +206,10 @@ lin woman_N = mkN "nainen" ;
 lin yellow_A = mkA "keltainen" ;
 lin young_A = mkA "nuori" "nuoret";
 
+-- own added words
+lin helmet_N = mkN "kypärä" ;
+lin pencil_N = mkN "kynä" ;
+
 ---------------------------
 -- Paradigms part ---------
 ---------------------------
@@ -208,30 +224,26 @@ oper
 
   mkA = overload {
     mkA : Str -> A
-    = \s -> lin A {s = s} ;
+    = \s -> lin A (mkAdjective s) ; --regular adjectives oli lin A { s = s}
     mkA : Str -> Str -> A
-    = \sg,pl -> lin A (irregA sg pl) ;
+    = \sg,pl -> lin A (irregA sg pl) ; --irregular adjectives
   } ;
 
   mkV = overload {
     mkV : (inf : Str) -> V  
       = \s -> lin V (smartVerb s) ; --most of our Finnish verbs go through the pattern checking in smartVerb
-    mkV : Str -> Str -> Str -> Str -> V  --only needed with a few of the forms?
+    mkV : Str -> Str -> Str -> Str -> V  --only needed with a few of the forms
       = \inf, stem, persg, perpl -> lin V (irregVerb inf stem persg perpl) ;
   } ;
 
- --won't be needing most of these with Finnish:
+ --won't be needing most of these with Finnish???:
 
-  --mkV2 = overload {
-  --  mkV2 : Str -> V2          -- predictable verb with direct object, e.g. "wash"
-  --    = \s   -> lin V2 (smartVerb s ** {c = []}) ;
-  --  mkV2 : Str  -> Str -> V2  -- predictable verb with preposition, e.g. "wait - for"
-  --    = \s,p -> lin V2 (smartVerb s ** {c = p}) ;
-  --  mkV2 : V -> V2            -- any verb with direct object, e.g. "drink"
-  --    = \v   -> lin V2 (v ** {c = []}) ;
-  --  mkV2 : V -> Str -> V2     -- any verb with preposition
-  --    = \v,p -> lin V2 (v ** {c = p}) ;
-  --  } ;
+  mkV2 = overload {
+   mkV2 : Str -> V2          -- predictable verb with direct object, e.g. "opettaa" "juoda"
+     = \s   -> lin V2 (smartVerb s ** {c = []}) ;
+   mkV2 : Str -> Str -> Str -> Str -> V2            -- any verb with direct object, e.g. "lukea"
+     = \v   -> lin V2 (v ** {c = []}) ;
+  } ;
 
   --mkAdv : Str -> Adv
   --  = \s -> lin Adv {s = s} ;
@@ -239,4 +251,4 @@ oper
   --mkPrep : Str -> Prep
   --  = \s -> lin Prep {s = s} ;
 
---}
+}
