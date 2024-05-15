@@ -5,24 +5,24 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
 ---------------- Grammar part -----------------------
 -----------------------------------------------------
 
-  lincat
-    Utt = {s : Str} ;
-    S  = {s : Str} ;
-    VP = {verb : Verb ; compl : Str} ; ---s special case of Mini
-    Comp = {s : Str} ;
+  lincat --linearization **type** definitions
+    Utt = {s : Str} ; --record with a string s
+    S  = {s : Str} ; --record with a string s
+    VP = {verb : Verb ; compl : Str} ; ---s special case of Mini???????
+    Comp = {s : Str} ; --record with a string s
     AP = Adjective ;
     CN = Noun ;
     NP = {s : Case => Str ; a : Agreement} ;
     Pron = {s : Case => Str ; a : Agreement} ;
-    --Det = {s : Str ; n : Number} ; --not sure about this one
-    Prep = {s : Str} ;
+    --Det = {s : Str ; n : Number} ; --not needing this for Finnish
+    Prep = {s : Str} ;   --record with a string s
     V = Verb ;
     V2 = Verb2 ;
     A = Adjective ;
     N = Noun ;
-    Adv = {s : Str} ;
+    Adv = {s : Str} ;  --record with a string s
 
-  lin
+  lin  --linearization definitions
     UttS s = s ;
     UttNP np = {s = np.s ! Acc} ;
 
@@ -171,7 +171,7 @@ lin kill_V2 = mkV2 "tappaa" ;
 lin language_N = mkN "kieli" ;
 lin live_V = mkV "elää" ;
 lin love_V2 = mkV2 "rakastaa" ; --(mkV "love") ;
-lin man_N = mkN "mies" "miehet" ;
+lin man_N = mkN "mies" ;
 lin milk_N = mkN "maito" ;
 lin music_N = mkN "musiikki" ;
 --lin new_A = mkA "uusi" "uudet" ;
@@ -206,9 +206,17 @@ lin woman_N = mkN "nainen" ;
 lin yellow_A = mkA "keltainen" ;
 lin young_A = mkA "nuori" "nuoret";
 
--- own added words
+-- own added words, not sure if these will work since they are not in the abstract grammar?
 lin helmet_N = mkN "kypärä" ;
 lin pencil_N = mkN "kynä" ;
+lin cake_N = mkN "kakku";
+lin ticket_N = mkN "lappu" ;
+lin cloudberry_N = mkN "lakka";
+lin hat_N = mkN "hattu";
+lin stairway_N = mkN "rappu";
+lin cap_N = mkN "lakki";
+lin button_N = mkN "nappi";
+lin pacifier_N = mkN "tutti";
 
 ---------------------------
 -- Paradigms part ---------
@@ -224,7 +232,7 @@ oper
 
   mkA = overload {
     mkA : Str -> A
-    = \s -> lin A (mkAdjective s) ; --regular adjectives oli lin A { s = s}
+    = \s -> lin A (mkAdjective s) ; --used to be lin A { s = s}
     mkA : Str -> Str -> A
     = \sg,pl -> lin A (irregA sg pl) ; --irregular adjectives
   } ;
@@ -241,7 +249,7 @@ oper
   mkV2 = overload {
    mkV2 : Str -> V2          -- predictable verb with direct object, e.g. "opettaa" "juoda"
      = \s   -> lin V2 (smartVerb s ** {c = []}) ;
-   mkV2 : Str -> Str -> Str -> Str -> V2            -- any verb with direct object, e.g. "lukea"
+   mkV2 : Str -> Str -> Str -> Str -> V2            -- irregular verb with direct object, e.g. "lukea"
      = \v   -> lin V2 (v ** {c = []}) ;
   } ;
 
