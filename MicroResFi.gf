@@ -6,14 +6,13 @@ param
   Tense = Pres | Per | Pkp ;
   Person = Per1 | Per2 | Per3 ;
 
-
-  Agreement = Agr Number Case ; -- adjectives agree with nouns in number and case
-  AgreementVerbs = VAgr Number Person Tense ; --verbs agree with 
+  Agreement = NAgr Number Case ; -- adjectives agree with nouns in number and case
+  AgreementVerbs = VAgr Number Person ; --Tense not needed
 
 
 oper
--- declaring the noun type in Finnish
-  Noun : Type = {s : Number => Case => Str} ;
+
+-- OPERS TO HELP WITH VOWEL HARMONY --
 
   vowelHarmony : Str -> Str ;     --trying to minimize pattern matching repetition with this oper that is used for the vowel harmony checking
   vowelHarmony = \c -> case c of {
@@ -65,6 +64,10 @@ oper
     "n" => "n"
   };
 
+--  NOUNS --
+
+-- declaring the noun type in Finnish
+  Noun : Type = {s : Number => Case => Str} ;
 
 -- for nouns that don't have the kpt rule ?
   mkNoun : Str -> Str -> Noun = \sg,pl -> {  
@@ -198,7 +201,8 @@ smartNoun : Str -> Noun = \sg -> {
         x + "s" => x + "ksen" ; --kasvis, kasvikset
         x + "e" => x + "een" ; -- virhe, virheet
         x + "nen" => x + "sen";
-        x + "in" => init sg + "men"
+        x + "in" => init sg + "men";
+        _ => (regNoun sg).s ! Sg ! Acc 
       } ;
       Gen => case sg of {
         x + "akku" => x + "akun" ; --kk -> k
@@ -219,7 +223,8 @@ smartNoun : Str -> Noun = \sg -> {
         x + "s" => x + "ksen" ; --kasvis, kasvikset
         x + "e" => x + "een" ; -- tietokoneen, veneen, 
         x + "nen" => x + "sen";
-        x + "in" => init sg + "men"
+        x + "in" => init sg + "men";
+        _ => (regNoun sg).s ! Sg ! Gen 
       };
       Par => case sg of {
         x + "nen" => x + "st" + otherVowelHarmony(sg);
@@ -233,7 +238,8 @@ smartNoun : Str -> Noun = \sg -> {
         x + "u" => x + "ua";
         x + "o" => x + "oa";
         x + "ö" => x + "öä";
-        x + "ä" => x + "ää" 
+        x + "ä" => x + "ää" ;
+        _ => (regNoun sg).s ! Sg ! Par 
       } ;
       Ine => case sg of {
         x + "akku" => x + "akussa" ; --kk -> k
@@ -255,7 +261,8 @@ smartNoun : Str -> Noun = \sg -> {
         x + "s" => x + "ksessa" ; --kasvis, kasvikset
         x + "e" => x + "eessä" ;  -- virhe, virheet
         x + "nen" => x + "sess" + otherVowelHarmony(sg);
-        x + "in" => init sg + "mess" + otherVowelHarmony(sg)
+        x + "in" => init sg + "mess" + otherVowelHarmony(sg);
+        _ => (regNoun sg).s ! Sg ! Ine 
       } ;
       Ela => case sg of {
         x + "akku" => x + "akusta" ; --kk -> k
@@ -277,7 +284,8 @@ smartNoun : Str -> Noun = \sg -> {
         x + "s" => x + "ksesta" ; --kasvis, kasvikset
         x + "e" => x + "eestä" ; -- virhe, virheet
         x + "nen" => x + "sest" + otherVowelHarmony(sg);
-        x + "in" => init sg + "mest" + otherVowelHarmony(sg)
+        x + "in" => init sg + "mest" + otherVowelHarmony(sg);
+        _ => (regNoun sg).s ! Sg ! Ela 
       } ;
       Ill => case sg of {
         x + ("li"|"ri"|"si"|"t") => init sg + "een";
@@ -290,7 +298,8 @@ smartNoun : Str -> Noun = \sg -> {
         x + "s" => x + "en" ;
         x + "e" => x + "seen";
         x + "i" => x + "iin";
-        x + "in" => init sg + "meen"
+        x + "in" => init sg + "meen";
+        _ => (regNoun sg).s ! Sg ! Ill 
       } ;
       Ade => case sg of {
         x + "akku" => x + "akulla" ; --kk -> k
@@ -312,7 +321,8 @@ smartNoun : Str -> Noun = \sg -> {
         x + "s" => x + "ksella" ; --kasvis, kasvikset
         x + "e" => x + "eellä" ; -- virhe, virheet
         x + "nen" => x + "sell" + otherVowelHarmony(sg);
-        x + "in" => init sg + "mell" + otherVowelHarmony(sg)
+        x + "in" => init sg + "mell" + otherVowelHarmony(sg);
+        _ => (regNoun sg).s ! Sg ! Ade 
       } ;
       Abl => case sg of {
         x + "akku" => x + "akulta" ; --kk -> k
@@ -334,7 +344,8 @@ smartNoun : Str -> Noun = \sg -> {
         x + "s" => x + "kselta" ; --kasvis, kasvikset
         x + "e" => x + "eeltä" ; -- virhe, virheet
         x + "nen" => x + "selt" + otherVowelHarmony(sg);
-        x + "in" => init sg + "melt" + otherVowelHarmony(sg)
+        x + "in" => init sg + "melt" + otherVowelHarmony(sg);
+        _ => (regNoun sg).s ! Sg ! Abl 
       } ;
       All => case sg of {
         x + "akku" => x + "akulle" ; --kk -> k
@@ -355,7 +366,8 @@ smartNoun : Str -> Noun = \sg -> {
         x + "s" => x + "kselle" ; --kasvis, kasvikset
         x + "e" => x + "eelle" ; -- virhe, virheet
         x + "nen" => x + "selle";
-        x + "in" => init sg + "melle"
+        x + "in" => init sg + "melle";
+        _ => (regNoun sg).s ! Sg ! All 
       } ;
       Ess => case sg of {
         x + "ki" => x + "kina";
@@ -364,7 +376,8 @@ smartNoun : Str -> Noun = \sg -> {
         x + "es" => x + "ehen" + otherVowelHarmony(sg);
         x + ("i"|"e") => x + "enä" ; 
         x + ("ö"|"ä") => sg + "nä";
-        x + "in" => init sg + "menä"
+        x + "in" => init sg + "menä";
+        _ => (regNoun sg).s ! Sg ! Ess
       } ;
       Tra => case sg of {
         x + "akku" => x + "akuksi" ; --kk -> k
@@ -385,7 +398,8 @@ smartNoun : Str -> Noun = \sg -> {
         x + "s" => x + "kseksi" ; --kasvis, kasvikset
         x + "e" => x + "eeksi" ; -- virhe, virheet
         x + "nen" => x + "seksi";
-        x + "in" => init sg + "meksi" 
+        x + "in" => init sg + "meksi";
+        _ => (regNoun sg).s ! Sg ! Tra  
       } ;
       Abe => case sg of {
         x + "akku" => x + "akutta" ; --kk -> k
@@ -407,7 +421,8 @@ smartNoun : Str -> Noun = \sg -> {
         x + "s" => x + "ksetta" ; --kasvis, kasvikset
         x + "e" => x + "eettä" ; -- virhe, virheet
         x + "nen" => x + "sett" + otherVowelHarmony(sg);
-        x + "in" => init sg + "mettä"
+        x + "in" => init sg + "mettä";
+        _ => (regNoun sg).s ! Sg ! Abe 
       } 
     };
     Pl => table {
@@ -430,7 +445,8 @@ smartNoun : Str -> Noun = \sg -> {
       x + "s" => x + "kset" ; 
       x + "e" => x + "eet" ;
       x + "nen" => x + "set";
-      x + "in" => init sg + "met"
+      x + "in" => init sg + "met";
+      _ => (regNoun sg).s ! Pl ! Nom 
       };
       Acc => case sg of { --would there be a way of avoiding this repetition since nom and acc are the same?
       x + "akku" => x + "akut" ; 
@@ -451,7 +467,8 @@ smartNoun : Str -> Noun = \sg -> {
       x + "s" => x + "kset" ; 
       x + "e" => x + "eet" ;
       x + "nen" => x + "set";
-      x + "in" => init sg + "met" 
+      x + "in" => init sg + "met" ;
+      _ => (regNoun sg).s ! Pl ! Acc 
       };
       Gen => case sg of {
       x + ("li"|"ri"|"si"|"ni"|"pi"|"ka") => init sg + "ien";  
@@ -462,7 +479,8 @@ smartNoun : Str -> Noun = \sg -> {
       x + "ne" => x + "neiden";
       x + ("ö"| "u") => sg + "jen";
       x + "in" => init sg + "mien" ;
-      x + "t" => x + "iden"
+      x + "t" => x + "iden";
+      _ => (regNoun sg).s ! Pl ! Gen 
       } ;
       Par => case sg of {
       x + "akku" => x + "akkuja" ; --kk -> k
@@ -484,7 +502,8 @@ smartNoun : Str -> Noun = \sg -> {
       x + "s" => x + "ksia" ; --kasvis, kasvikset
       x + "e" => x + "eitä" ; -- virhe, virheet
       x + "nen" => x + "si" + otherVowelHarmony(sg);
-      x + "in" => init sg + "miä"
+      x + "in" => init sg + "miä";
+      _ => (regNoun sg).s ! Pl ! Par 
       };
       Ine => case sg of {
       x + "akku" => x + "akuissa" ; --kk -> k
@@ -506,7 +525,8 @@ smartNoun : Str -> Noun = \sg -> {
       x + "s" => x + "ksissa" ; --kasvis, kasvikset
       x + "e" => x + "eissä" ;
       x + "nen" => x + "siss" + otherVowelHarmony(sg);
-      x + "in" => init sg + "miss" + otherVowelHarmony(sg)
+      x + "in" => init sg + "miss" + otherVowelHarmony(sg);
+      _ => (regNoun sg).s ! Pl ! Ine 
       };
       Ela => case sg of {
       x + "akku" => x + "akuista" ; --kk -> k
@@ -528,7 +548,8 @@ smartNoun : Str -> Noun = \sg -> {
       x + "s" => x + "ksista" ; --kasvis, kasvikset
       x + "e" => x + "eistä" ;
       x + "nen" => x + "sist" + otherVowelHarmony(sg);
-      x + "in" => init sg + "mist" + otherVowelHarmony(sg)
+      x + "in" => init sg + "mist" + otherVowelHarmony(sg);
+      _ => (regNoun sg).s ! Pl ! Ela 
       };
       Ill => case sg of {
       x + "akku" => x + "akkuihin" ; --kk -> k
@@ -551,7 +572,8 @@ smartNoun : Str -> Noun = \sg -> {
       x + "e" => x + "eisiin" ; -- virhe, virheet
       x + "uu" => sg + "uihin" ;
       x + "nen" => x + "siin" ;
-      x + "in" => init sg + "miin" 
+      x + "in" => init sg + "miin" ;
+      _ => (regNoun sg).s ! Pl ! Ill 
       };
       Ade => case sg of {
       x + "akku" => x + "akuilla" ; --kk -> k
@@ -574,7 +596,8 @@ smartNoun : Str -> Noun = \sg -> {
       x + "e" => x + "eillä" ; -- veneillä
       x + "uu" => sg + "uilla" ;
       x + "nen" => x + "sill" + otherVowelHarmony(sg);
-      x + "in" => init sg + "mill" + otherVowelHarmony(sg)
+      x + "in" => init sg + "mill" + otherVowelHarmony(sg);
+      _ => (regNoun sg).s ! Pl ! Ade 
       };
       Abl => case sg of {
       x + "akku" => x + "akuilta" ; --kk -> k
@@ -597,7 +620,8 @@ smartNoun : Str -> Noun = \sg -> {
       x + "e" => x + "eiltä" ; -- veneillä
       x + "uu" => sg + "uilta" ;
       x + "nen" => x + "silt" + otherVowelHarmony(sg);
-      x + "in" => init sg + "milt" + otherVowelHarmony(sg)
+      x + "in" => init sg + "milt" + otherVowelHarmony(sg);
+      _ => (regNoun sg).s ! Pl ! Abl 
       };
       All => case sg of {
       x + "akku" => x + "akuille" ; --kk -> k
@@ -619,7 +643,8 @@ smartNoun : Str -> Noun = \sg -> {
       x + "e" => x + "eille" ; -- veneillä
       x + "uu" => sg + "uille" ;
       x + "nen" => x + "sille";
-      x + "in" => init sg + "mille"
+      x + "in" => init sg + "mille";
+      _ => (regNoun sg).s ! Pl ! All 
       };
       Ess => case sg of {
       x + "akku" => x + "akkuina" ; --kk -> k
@@ -642,7 +667,8 @@ smartNoun : Str -> Noun = \sg -> {
       x + "e" => x + "einä" ; -- veneillä
       x + "uu" => sg + "uina" ;
       x + "nen" => x + "sin" + otherVowelHarmony(sg);
-      x + "in" => init sg + "min" + otherVowelHarmony(sg)
+      x + "in" => init sg + "min" + otherVowelHarmony(sg);
+      _ => (regNoun sg).s ! Pl ! Ess 
       };
       Tra => case sg of {
       x + "akku" => x + "akuiksi" ; --kk -> k
@@ -664,7 +690,8 @@ smartNoun : Str -> Noun = \sg -> {
       x + "e" => x + "eiksi" ; -- veneiksi
       x + "uu" => sg + "uiksi" ; --puiksi
       x + "nen" => x + "siksi";
-      x + "in" => init sg + "miksi"
+      x + "in" => init sg + "miksi";
+      _ => (regNoun sg).s ! Pl ! Tra 
       };
       Abe => case sg of {
       x + "akku" => x + "akuitta" ; --kk -> k
@@ -687,7 +714,8 @@ smartNoun : Str -> Noun = \sg -> {
       x + "e" => x + "eittä" ; -- veneillä
       x + "uu" => sg + "uitta" ;
       x + "nen" => x + "sitt" + otherVowelHarmony(sg);
-      x + "in" => init sg + "mitt" + otherVowelHarmony(sg)
+      x + "in" => init sg + "mitt" + otherVowelHarmony(sg);
+      _ => (regNoun sg).s ! Pl ! Abe
       }
     }
   }
@@ -1053,18 +1081,48 @@ mkVerb : (stem, persg, perpl : Str) -> Verb
    --pela  +  ("a" | "ä")  => regVerb inf     -- perusmuodon lopussa on a tai ä.  rikkoa, lukea, ymmärtää, mennä, ostaa, löytää, tappaa. elää, rakastaa, nukkua, opettaa, matkustaa, odottaa
    } ;
  
-  -- two-place verb with "case" as preposition; for transitive verbs, c=[]
-    Verb2 : Type = Verb ** {c : Str} ;
+  -- two-place verb with "case" as preposition; for transitive verbs, c=[], let's see if we will use this with Finnish...
+  Verb2 : Type = Verb ** {c : Str} ;
 
-   be_Verb : Verb = irregVerb "olla" "ole" "ollut" "olleet" ; ---s to be generalized
-
+  be_Verb : Verb = irregVerb "olla" "ole" "ollut" "olleet" ; ---s to be generalized
 
 ---s a very simplified verb agreement function for Micro
-  agr2vform : Agreement -> VForm = \a -> 
-  case a of {
-   Agr Sg => Sg ;
-   Agr Pl => Pl
-  } ;
-
+--  agr2vform : AgreementVerbs -> Verb = \a ->   --was Vform
+--   table {
+--   Sg => table {
+--         Per1 => table {
+--             Pres => Pres;
+--             Per => Per; --how to add space?
+--             Pkp => Pkp
+--         } ;
+--         Per2 => table {
+--             Pres => Pres;
+--             Per => Per;
+--             Pkp => Pkp
+--         } ;
+--         Per3 => table {
+--             Pres => Pres;
+--             Per => Per;
+--             Pkp => Pkp
+--       } 
+--    } ;
+--    Pl => table {
+--         Per1 => table {
+--             Pres => Pres;
+--             Per => Per ;
+--             Pkp => Pkp
+--         } ;
+--         Per2 => table {
+--             Pres => Pres ;
+--             Per => Per ;
+--             Pkp => Pkp
+--         } ;
+--         Per3 => table {
+--             Pres => Pres ;
+--             Per => Per ;
+--             Pkp => Pkp
+--           } 
+--       }
+-- };
 };
 

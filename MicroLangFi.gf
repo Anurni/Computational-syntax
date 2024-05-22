@@ -6,118 +6,142 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
 -----------------------------------------------------
 
   lincat --linearization **type** definitions
-    Utt = {s : Str} ; --record with a string s
-    S  = {s : Str} ; --record with a string s
-    VP = {verb : Verb ; compl : Str} ; ---s special case of Mini???????
-    Comp = {s : Str} ; --record with a string s
+
+    Utt = {s : Str} ;
+    S  = {s : Str} ;
+    VP = {verb : Verb ; compl : Str } ; ---s special case of Mini
+    Comp = {s : Number => Case => Str} ;   
     AP = Adjective ;
     CN = Noun ;
-    NP = {s : Case => Str ; a : Agreement} ;
+    NP = {s : Case => Str ; a : Agreement} ;  --or s: Str; a: Agreement???=> Case => Str
     Pron = {s : Case => Str ; a : Agreement} ;
-    --Det = {s : Str ; n : Number} ; --not needing this for Finnish
-    Prep = {s : Str} ;   --record with a string s
+    Det = {s : Str ; n : Number} ;
+    Prep = {s : Str} ;
     V = Verb ;
     V2 = Verb2 ;
     A = Adjective ;
     N = Noun ;
-    Adv = {s : Str} ;  --record with a string s
+    Adv = {s : Str} ;
 
   lin  --linearization definitions
-    UttS s = s ;
-    UttNP np = {s = np.s ! Acc} ;
+  
+  UttS s = s ;
+  UttNP np = {s = np.s ! Nom} ; --had ! sg ! acc
 
-    PredVPS np vp = {
-      s = np.s ! Nom ++ vp.verb.s ! agr2vform np.a ++ vp.compl
-      } ;
-      
-    UseV v = {
+ -- PredVPS np vp = {
+ -- s = np.s ! Nom ++ agr2vform np.a vp.verb.s ++ vp.compl
+ --} ;
+
+   PredVPS np vp = {
+    s = np.s ! Nom  ++ vp.verb.s ! Sg ! Per2 ! Pres ++ vp.compl
+    } ;
+
+   UseV v = {
       verb = v ;
-      compl = [] ;
+      compl = " " ;
       } ;
       
-    ComplV2 v2 np = {
-      verb = v2 ;
-      compl = v2.c ++ np.s ! Acc  -- NP object in the accusative, preposition first
-      } ;
+  ComplV2 v2 np = {
+    verb = v2 ;
+    compl = v2.c ++ np.s ! Acc  -- NP object in the accusative
+    } ;
       
-    UseComp comp = {
+  UseComp comp = {
       verb = be_Verb ;     -- the verb is the copula "be"
-      compl = comp.s
+      compl = comp.s ! Pl ! Nom
       } ;
+     
+  CompAP ap = {s = ap.s};     --CompAP ap = {s = ap.s ! Sg ! Nom} ;  --CompAP ap = ap ;  --CompAP ap = {s = ap.s ! Sg ! Nom ! };
       
-    CompAP ap = ap ;
-      
-    AdvVP vp adv =
+  AdvVP vp adv =
       vp ** {compl = vp.compl ++ adv.s} ;
       
-    --DetCN det cn = {
-    --  s = \\c => det.s ++ cn.s ! det.n ;
-    --  a = Agr det.n ;
-    --  } ;
+  --DetCN cn = {
+  --  s = \\c => cn.s ! det.n ;
+  --  } ;
       
-    UsePron p = p ;
+  UsePron p = p;
             
-    --a_Det = {s = pre {"a"|"e"|"i"|"o" => "an" ; _ => "a"} ; n = Sg} ; --- a/an can get wrong
-    --aPl_Det = {s = "" ; n = Pl} ;
-    --the_Det = {s = "the" ; n = Sg} ;
-    --thePl_Det = {s = "the" ; n = Pl} ;
+    a_Det = {s = pre {"a"|"e"|"i"|"o" => "an" ; _ => "a"} ; n = Sg} ; --- a/an can get wrong
+    aPl_Det = {s = "" ; n = Pl} ;
+    the_Det = {s = "the" ; n = Sg} ;
+    thePl_Det = {s = "the" ; n = Pl} ;
     
     UseN n = n ;
     
     AdjCN ap cn = {
-      s = table {n => ap.s ++ cn.s ! n}
-      } ;
+      s = table {
+        n => table { 
+          c => ap.s ! n ! c ++ cn.s ! n ! c  --number and case????
+          }
+       }  
+    } ;
 
     PositA a = a ;
 
     PrepNP prep np = {s = prep.s ++ np.s ! Acc} ;
 
-    --in_Prep = {s = "in"} ;
-    --on_Prep = {s = "on"} ;
-    --with_Prep = {s = "with"} ;
+    in_Prep = {s = "in"} ;
+    on_Prep = {s = "on"} ;
+    with_Prep = {s = "with"} ;
 
-    minä_Pron = {
-      s = table {
-        Nom => "minä" ; 
-        Acc => "minut"} ;
-      a = Agr Sg ;
-      } ;
-    sinä_Pron = {
-      s = table {
-        Nom => "sinä" ; 
-        Acc => "sinut"} ;
-      a = Agr Sg ;
-      } ;
-    hän_Pron = {
-      s = table {
-      Nom => "hän" ; 
-      Acc => "hänet"} ;
-      a = Agr Sg ;
-      } ;
-    me_Pron = {
-      s = table {
-        Nom => "me" ; 
-        Acc => "meidät"} ;
-      a = Agr Pl ;
-      } ;
-    te_Pron = {
-      s = table {
-        Nom => "te" ; 
-        Acc => "teidät"} ;
-      a = Agr Pl ;
-      } ;
-    he_Pron = {
-      s = table {
-        Nom => "he" ; 
-        Acc => "heidät"} ;
-      a = Agr Pl ;
+     he_Pron = {
+       s = table {
+            Nom => "hän";
+            Acc => "hänet";
+            Gen => "hänen";
+            Par => "häntä";
+            Ine => "hänessä";
+            Ela => "hänestä";
+            Ill => "häneen";
+            Ade => "hänellä";
+            Abl => "häneltä";
+            All => "hänelle";
+            Ess => "hänenä";
+            Tra => "häneksi";
+            Abe => "_" };
+       a = NAgr Sg Nom;
+       } ;
+     she_Pron = {
+       s = table {
+            Nom => "hän";
+            Acc => "hänet";
+            Gen => "hänen";
+            Par => "häntä";
+            Ine => "hänessä";
+            Ela => "hänestä";
+            Ill => "häneen";
+            Ade => "hänellä";
+            Abl => "häneltä";
+            All => "hänelle";
+            Ess => "hänenä";
+            Tra => "häneksi";
+            Abe => "_" };
+       a = NAgr Sg Nom;
+       } ;
+    they_Pron = {
+       s = table {
+            Nom => "he";
+            Acc => "heidät";
+            Gen => "heidän";
+            Par => "heitä";
+            Ine => "heissä";
+            Ela => "heistä";
+            Ill => "heihin";
+            Ade => "heillä";
+            Abl => "heiltä";
+            All => "heille";
+            Ess => "heinä";
+            Tra => "heiksi";
+            Abe => "_" };
+      a = NAgr Pl Nom;
       } ;
 
 -----------------------------------------------------
 ---------------- Lexicon part -----------------------
 -----------------------------------------------------
 
---lin already_Adv = mkAdv "jo" ;
+lin already_Adv = mkAdv "jo" ;
 lin animal_N = mkN "eläin" ;
 lin apple_N = mkN "omena" ; --REG
 lin baby_N = mkN "vauva" ; --REG
@@ -125,7 +149,7 @@ lin bad_A = mkA "paha" ;
 lin beer_N = mkN "olut" ;
 lin big_A = mkA "iso" ;
 lin bike_N = mkN "polkupyörä" ; --REG
-lin bird_N = mkN "lintu" ;
+--lin bird_N = mkN "lintu" ;
 lin black_A = mkA "musta" ;
 lin blood_N = mkN "veri" ;
 lin blue_A = mkA "sininen" ;
@@ -140,7 +164,7 @@ lin cat_N = mkN "kissa" ;
 lin child_N = mkN "lapsi" ;
 lin city_N = mkN "kaupunki" "kaupungit" ;
 lin clean_A = mkA "siisti" ;
-lin clever_A = mkA "fiksu" ;
+--lin clever_A = mkA "fiksu" ;
 lin cloud_N = mkN "pilvi" ;
 lin cold_A = mkA "kylmä" ;
 lin come_V = mkV "tulla" ;
@@ -164,20 +188,20 @@ lin heavy_A = mkA "painava" ;
 lin horse_N = mkN "hevonen" ;
 lin hot_A = mkA "kuuma" ;
 lin house_N = mkN "talo" ;
--- lin john_PN = mkPN "John" ;
+--lin john_PN = mkPN "John" ;
 lin jump_V = mkV "hypätä" ;
 lin kill_V2 = mkV2 "tappaa" ;
--- lin know_VS = mkVS (mkV "know" "knew" "known") ;
+--lin know_VS = mkVS (mkV "know" "knew" "known") ;
 lin language_N = mkN "kieli" ;
 lin live_V = mkV "elää" ;
 lin love_V2 = mkV2 "rakastaa" ; --(mkV "love") ;
 lin man_N = mkN "mies" ;
 lin milk_N = mkN "maito" ;
 lin music_N = mkN "musiikki" ;
---lin new_A = mkA "uusi" "uudet" ;
---lin now_Adv = mkAdv "nyt" ;
+lin new_A = mkA "uusi" "uudet" ;
+lin now_Adv = mkAdv "nyt" ;
 lin old_A = mkA "vanha" ;
--- lin paris_PN = mkPN "Paris" ;
+--lin paris_PN = mkPN "Paris" ;
 lin play_V = mkV "pelata" ;
 lin read_V2 = mkV2 "lukea" "lue" "lukenut" "lukeneet" ; --(mkV "read" "read" "read") ;
 lin ready_A = mkA "valmis" "valmiit" ;
@@ -207,29 +231,30 @@ lin yellow_A = mkA "keltainen" ;
 lin young_A = mkA "nuori" "nuoret";
 
 -- own added words, not sure if these will work since they are not in the abstract grammar?
-lin helmet_N = mkN "kypärä" ;
-lin pencil_N = mkN "kynä" ;
-lin cake_N = mkN "kakku";
-lin ticket_N = mkN "lappu" ;
-lin cloudberry_N = mkN "lakka";
-lin hat_N = mkN "hattu";
-lin stairway_N = mkN "rappu";
-lin cap_N = mkN "lakki";
-lin button_N = mkN "nappi";
-lin pacifier_N = mkN "tutti";
+-- lin helmet_N = mkN "kypärä" ;
+-- lin pencil_N = mkN "kynä" ;
+-- lin cake_N = mkN "kakku";
+-- lin ticket_N = mkN "lappu" ;
+-- lin cloudberry_N = mkN "lakka";
+-- lin hat_N = mkN "hattu";
+-- lin stairway_N = mkN "rappu";
+-- lin cap_N = mkN "lakki";
+-- lin button_N = mkN "nappi";
+-- lin pacifier_N = mkN "tutti";
 
 ---------------------------
 -- Paradigms part ---------
 ---------------------------
 
 oper
+  --nouns
   mkN = overload {
     mkN : Str -> Noun   -- säännölliset substantiivit ja odotettavat muutokset - predictable nouns and expected modifications, e.g. auto - autot, katto - katot, 
-      = \n -> lin N (smartNoun n) ;
+      = \n -> lin N (smartNoun n) ; --smartNoun
     mkN : Str -> Str -> Noun  -- epäsäännölliset substantiivit, irregular nouns like kaupunki - kaupungit, mies - miehet   
       = \sg,pl -> lin N (mkNoun sg pl) ;
     } ;
-
+  --adjectives
   mkA = overload {
     mkA : Str -> A
     = \s -> lin A (mkAdjective s) ; --used to be lin A { s = s}
@@ -237,6 +262,7 @@ oper
     = \sg,pl -> lin A (irregA sg pl) ; --irregular adjectives
   } ;
 
+-- intransitive verbs
   mkV = overload {
     mkV : (inf : Str) -> V  
       = \s -> lin V (smartVerb s) ; --most of our Finnish verbs go through the pattern checking in smartVerb
@@ -244,19 +270,20 @@ oper
       = \inf, stem, persg, perpl -> lin V (irregVerb inf stem persg perpl) ;
   } ;
 
- --won't be needing most of these with Finnish???:
+ -- transitive verbs
+ mkV2 = overload {
+  mkV2 : (inf : Str) -> V2           -- predictable verb with direct object, e.g. "opettaa" "juoda"
+    = \s   -> lin V2 (smartVerb s ** {c = []}); 
+  mkV2 : Str -> Str -> Str -> Str -> V2            -- irregular verb with direct object, e.g. "lukea"
+    = \v,y,e,w   -> lin V2 (irregVerb v y e w ** {c = []}) ;
+ } ;
 
-  mkV2 = overload {
-   mkV2 : Str -> V2          -- predictable verb with direct object, e.g. "opettaa" "juoda"
-     = \s   -> lin V2 (smartVerb s ** {c = []}) ;
-   mkV2 : Str -> Str -> Str -> Str -> V2            -- irregular verb with direct object, e.g. "lukea"
-     = \v   -> lin V2 (v ** {c = []}) ;
-  } ;
-
-  --mkAdv : Str -> Adv
-  --  = \s -> lin Adv {s = s} ;
+  --adverbs
+  mkAdv : Str -> Adv
+   = \s -> lin Adv {s = s} ;
   
-  --mkPrep : Str -> Prep
-  --  = \s -> lin Prep {s = s} ;
+  --prepositions
+  mkPrep : Str -> Prep
+   = \s -> lin Prep {s = s} ;
 
 }
