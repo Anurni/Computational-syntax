@@ -6,8 +6,10 @@ param
   Tense = Pres | Per | Pkp ;
   Person = Per1 | Per2 | Per3 ;
 
-  Agreement = NAgr Number Case ; -- adjectives agree with nouns in number and case
-  AgreementVerbs = VAgr Number Person ; --Tense not needed
+  Agreement = NAgr Number Case ; -- nouns and adjectives agree with nouns in number and case
+  AgreementVerbs = VAgr Number Person Tense ; --Tense not needed???
+
+  Verbform = IndPres | IndPer | IndPkp ; --????????????
 
 
 oper
@@ -1036,7 +1038,15 @@ mkVerb : (stem, persg, perpl : Str) -> Verb
             Pkp => "olit_" + persg
         } ;
         Per3 => table {
-            Pres => stem  ;
+            Pres => case stem of {    --I'm aware this is not the most optimal way of doing this, I only realized some of the issues with 3rd person conjugations AFTER I managed to see the actual linearizations
+              "o" => "on";
+              men + "e" => men + "ee";      
+              löy + "dä" => löy + "tää";
+              ri + "ko" => ri + "kkoo";
+              rakas + "ta" => rakas + "taa";
+              ymmär + "rä" => ymmär + "tää";
+              _ => stem
+            }  ;
             Per => "on_" + persg ;
             Pkp => "oli_" + persg
       } 
@@ -1084,45 +1094,32 @@ mkVerb : (stem, persg, perpl : Str) -> Verb
   -- two-place verb with "case" as preposition; for transitive verbs, c=[], let's see if we will use this with Finnish...
   Verb2 : Type = Verb ** {c : Str} ;
 
-  be_Verb : Verb = irregVerb "olla" "ole" "ollut" "olleet" ; ---s to be generalized
+  be_Verb : Verb = irregVerb "olla" "o" "ollut" "olleet" ; ---s to be generalized
 
----s a very simplified verb agreement function for Micro
---  agr2vform : AgreementVerbs -> Verb = \a ->   --was Vform
---   table {
---   Sg => table {
---         Per1 => table {
---             Pres => Pres;
---             Per => Per; --how to add space?
---             Pkp => Pkp
---         } ;
---         Per2 => table {
---             Pres => Pres;
---             Per => Per;
---             Pkp => Pkp
---         } ;
---         Per3 => table {
---             Pres => Pres;
---             Per => Per;
---             Pkp => Pkp
---       } 
---    } ;
---    Pl => table {
---         Per1 => table {
---             Pres => Pres;
---             Per => Per ;
---             Pkp => Pkp
---         } ;
---         Per2 => table {
---             Pres => Pres ;
---             Per => Per ;
---             Pkp => Pkp
---         } ;
---         Per3 => table {
---             Pres => Pres ;
---             Per => Per ;
---             Pkp => Pkp
---           } 
---       }
--- };
+--- VERB AGREEMENT FUNCTION - HOW TO IMPLEMENT THIS?????
+--  agr2vform : Agreement -> Verbform = \a -> case a of {
+--   NAgr Sg Per1 Pres => \v -> v.s ! Sg ! Per1 ! Pres ;
+--   NAgr Sg Per2 Pres => \v -> v.s ! Sg ! Per2 ! Pres ;
+--   NAgr Sg Per3 Pres => \v -> v.s ! Sg ! Per3 ! Pres ;
+--   NAgr Pl Per1 Pres => \v -> v.s ! Pl ! Per1 ! Pres ;
+--   NAgr Pl Per2 Pres => \v -> v.s ! Pl ! Per2 ! Pres ;
+--   NAgr Pl Per3 Pres => \v -> v.s ! Pl ! Per3 ! Pres ;
+
+--   NAgr Sg Per1 Per => \v -> v.s ! Sg ! Per1 ! Per ;
+--   NAgr Sg Per2 Per => \v -> v.s ! Sg ! Per2 ! Per ;
+--   NAgr Sg Per3 Per => \v -> v.s ! Sg ! Per3 ! Per ;
+--   NAgr Pl Per1 Per => \v -> v.s ! Pl ! Per1 ! Per ;
+--   NAgr Pl Per2 Per => \v -> v.s ! Pl ! Per2 ! Per ;
+--   NAgr Pl Per3 Per => \v -> v.s ! Pl ! Per3 ! Per ;
+
+--   NAgr Sg Per1 Pkp => \v -> v.s ! Sg ! Per1 ! Pkp ;
+--   NAgr Sg Per2 Pkp => \v -> v.s ! Sg ! Per2 ! Pkp ;
+--   NAgr Sg Per3 Pkp => \v -> v.s ! Sg ! Per3 ! Pkp ;
+--   NAgr Pl Per1 Pkp => \v -> v.s ! Pl ! Per1 ! Pkp ;
+--   NAgr Pl Per2 Pkp => \v -> v.s ! Pl ! Per2 ! Pkp ;
+--   NAgr Pl Per3 Pkp => \v -> v.s ! Pl ! Per3 ! Pkp
+-- } ;
+
+
 };
 

@@ -13,11 +13,10 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
     Comp = {s : Number => Case => Str} ;   
     AP = Adjective ;
     CN = Noun ;
-    NP = {s : Case => Str ; a : Agreement} ;  --or s: Str; a: Agreement???=> Case => Str
-    Pron = {s : Case => Str ; a : Agreement} ;
+    NP, Pron = {s : Case => Str ; n : Number ; p : Person} ;   
     Det = {s : Str ; n : Number} ;
     Prep = {s : Str} ;
-    V = Verb ;
+    V = {s : Number => Person => Tense => Str} ;
     V2 = Verb2 ;
     A = Adjective ;
     N = Noun ;
@@ -26,15 +25,26 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
   lin  --linearization definitions
   
   UttS s = s ;
-  UttNP np = {s = np.s ! Nom} ; --had ! sg ! acc
+  UttNP np = {s = np.s ! Nom } ; 
 
- -- PredVPS np vp = {
- -- s = np.s ! Nom ++ agr2vform np.a vp.verb.s ++ vp.compl
- --} ;
-
-   PredVPS np vp = {
-    s = np.s ! Nom  ++ vp.verb.s ! Sg ! Per2 ! Pres ++ vp.compl
+  PredVPS np vp = {
+    s = np.s ! Nom  ++ vp.verb.s ! np.n ! np.p ! Pkp ++ vp.compl
     } ;
+
+  -- not working trial : 
+--  PredVPS np vp = {
+--  s = np.s ! Nom ++ agr2vform np.a vp.verb.s ++ vp.compl
+--  } ;
+
+  -- another not working trial : 
+  --   PredVPS np vp = {
+  --    s = np.s ! Nom ++ vp.verb.s ! NAgr np.n np.c ++ vp.compl
+  --  } ;
+
+  -- WORKING VERSION, however produces wrong forms...
+  --  PredVPS np vp = {
+  --   s = np.s ! Nom  ++ vp.verb.s ! Sg ! Per3 ! Pres ++ vp.compl
+  --   } ;
 
    UseV v = {
       verb = v ;
@@ -48,7 +58,7 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
       
   UseComp comp = {
       verb = be_Verb ;     -- the verb is the copula "be"
-      compl = comp.s ! Pl ! Nom
+      compl = comp.s ! Sg ! Nom
       } ;
      
   CompAP ap = {s = ap.s};     --CompAP ap = {s = ap.s ! Sg ! Nom} ;  --CompAP ap = ap ;  --CompAP ap = {s = ap.s ! Sg ! Nom ! };
@@ -62,10 +72,10 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
       
   UsePron p = p;
             
-    a_Det = {s = pre {"a"|"e"|"i"|"o" => "an" ; _ => "a"} ; n = Sg} ; --- a/an can get wrong
-    aPl_Det = {s = "" ; n = Pl} ;
-    the_Det = {s = "the" ; n = Sg} ;
-    thePl_Det = {s = "the" ; n = Pl} ;
+    -- a_Det = {s = pre {"a"|"e"|"i"|"o" => "an" ; _ => "a"} ; n = Sg} ; --- a/an can get wrong
+    -- aPl_Det = {s = "" ; n = Pl} ;
+    -- the_Det = {s = "the" ; n = Sg} ;
+    -- thePl_Det = {s = "the" ; n = Pl} ;
     
     UseN n = n ;
     
@@ -81,9 +91,46 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
 
     PrepNP prep np = {s = prep.s ++ np.s ! Acc} ;
 
-    in_Prep = {s = "in"} ;
-    on_Prep = {s = "on"} ;
-    with_Prep = {s = "with"} ;
+    --in_Prep = {s = "in"} ;
+    --on_Prep = {s = "on"} ;
+    with_Prep = {s = "kanssa"} ;
+     me_Pron = {
+       s = table {
+            Nom => "minä";
+            Acc => "minut";
+            Gen => "minun";
+            Par => "minua";
+            Ine => "minussa";
+            Ela => "minusta";
+            Ill => "minuun";
+            Ade => "minulla";
+            Abl => "minulta";
+            All => "minulle";
+            Ess => "minuna";
+            Tra => "minuksi";
+            Abe => "_" };
+       n = Sg ;
+       p = Per1
+       } ;
+
+      you_Pron = {
+       s = table {
+            Nom => "sinä";
+            Acc => "sinut";
+            Gen => "sinun";
+            Par => "sinua";
+            Ine => "sinussa";
+            Ela => "sinusta";
+            Ill => "sinuun";
+            Ade => "sinulla";
+            Abl => "sinulta";
+            All => "sinulle";
+            Ess => "sinuna";
+            Tra => "sinuksi";
+            Abe => "_" };
+       n = Sg ;
+       p = Per2
+       } ;
 
      he_Pron = {
        s = table {
@@ -100,7 +147,8 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
             Ess => "hänenä";
             Tra => "häneksi";
             Abe => "_" };
-       a = NAgr Sg Nom;
+       n = Sg ;
+       p = Per3
        } ;
      she_Pron = {
        s = table {
@@ -117,7 +165,8 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
             Ess => "hänenä";
             Tra => "häneksi";
             Abe => "_" };
-       a = NAgr Sg Nom;
+       n = Sg;
+       p = Per3
        } ;
     they_Pron = {
        s = table {
@@ -134,7 +183,8 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
             Ess => "heinä";
             Tra => "heiksi";
             Abe => "_" };
-      a = NAgr Pl Nom;
+      n = Pl;
+      p = Per3
       } ;
 
 -----------------------------------------------------
@@ -230,7 +280,7 @@ lin woman_N = mkN "nainen" ;
 lin yellow_A = mkA "keltainen" ;
 lin young_A = mkA "nuori" "nuoret";
 
--- own added words, not sure if these will work since they are not in the abstract grammar?
+-- own added words, don't work since they are not in the abstract grammar
 -- lin helmet_N = mkN "kypärä" ;
 -- lin pencil_N = mkN "kynä" ;
 -- lin cake_N = mkN "kakku";
