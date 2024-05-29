@@ -3,13 +3,13 @@ resource MicroResFi = open Prelude in {
 param
   Number = Sg | Pl ;
   Case = Nom | Acc | Gen | Par | Ine | Ela | Ill | Ade | Abl | All | Ess | Tra | Abe ; --left out two cases: instruktiivi and komitatiivi, lets see whether or not to include them later
-  Tense = Pres | Per | Pkp ;
+  Tense = Pres | Per | Pkp ;  --present (preesens), present perfect (perfekti) and past perfect (pluskvamperfekti)
   Person = Per1 | Per2 | Per3 ;
 
   Agreement = NAgr Number Case ; -- nouns and adjectives agree with nouns in number and case
-  AgreementVerbs = VAgr Number Person Tense ; --Tense not needed???
+  AgreementVerbs = VAgr Number Person Tense ; --Tense not needed maybe?
 
-  Verbform = IndPres | IndPer | IndPkp ; --????????????
+  Verbform = IndPres | IndPer | IndPkp ; --not used
 
 
 oper
@@ -27,7 +27,7 @@ oper
     "y" => "ä";
     "ö" => "ä"
 } ;
-  otherVowelHarmony : Str -> Str ;   --let's see if we can replace the original vowel harmony with this logic
+  otherVowelHarmony : Str -> Str ;   --another vowel harmony oper to help us with
   otherVowelHarmony = \character -> case character of {
     x + ("a"|"o"|"u") + y => "a";
     _ => "ä"
@@ -66,12 +66,25 @@ oper
     "n" => "n"
   };
 
+-- this oper will be used with 3rd person sg when conjugating  verbs
+  doubleVowel : Str -> Str ;
+  doubleVowel = \stem -> case stem of {
+      x + "a" =>  "aa";
+      x + "e" =>  "ee";
+      x + "u" =>  "uu";
+      x + "o" =>  "oo";
+      x + "y" =>  "yy";
+      x + "i" =>  "ii";
+      x + "ä" =>  "ää";
+      x + "ö" =>  "öö"
+  };
+
 --  NOUNS --
 
 -- declaring the noun type in Finnish
   Noun : Type = {s : Number => Case => Str} ;
 
--- for nouns that don't have the kpt rule ?
+-- NOUN - MAKING OPER !
   mkNoun : Str -> Str -> Noun = \sg,pl -> {  
     s = table {
         Sg => table {
@@ -319,7 +332,7 @@ smartNoun : Str -> Noun = \sg -> {
         x + "ttö" => x + "töllä" ; --tt -> i
         x + "es" => x + "ehell" + otherVowelHarmony(sg);
         x + "t" => x + "ell" + otherVowelHarmony(sg);
-        x + "i" => x + "ell" + vowelHarmony(last sg) ; --some nouns ending in i in singular (like lapsi, vesi,) we have a problem here tho bc some of these are regular (like muki), need to check this
+        x + "i" => x + "ell" + vowelHarmony(last sg) ; --some nouns ending in i in singular (like lapsi, vesi,) we have a problem here tho bc some of these are regular (like muki), need to check this later
         x + "s" => x + "ksella" ; --kasvis, kasvikset
         x + "e" => x + "eellä" ; -- virhe, virheet
         x + "nen" => x + "sell" + otherVowelHarmony(sg);
@@ -731,7 +744,7 @@ irregA : Str -> Str -> Adjective = --for irregular adjectives that have two form
     Sg => table {
         Nom => sg ;
         Acc => case sg of {
-          x + "ri" => x + "ren"; --very specific cases from our lexicon...probably not the most optimal way. Could have just given all the forms too.
+          x + "ri" => x + "ren"; --very specific cases from our lexicon...has its limitations! Could have just given all the forms too.
           x + "ni" => x + "nen";
           x + "is" => x + "iin";
           x + "si" => x + "den";
@@ -818,7 +831,7 @@ irregA : Str -> Str -> Adjective = --for irregular adjectives that have two form
     Pl => table {
         Nom => pl ;
         Acc => case sg of {
-          x + "ri" => x + "ret"; --very specific cases from our lexicon...probably not the most optimal way. Could have just given all the forms too.
+          x + "ri" => x + "ret"; 
           x + "ni" => x + "net";
           x + "is" => x + "iit";
           x + "si" => x + "det";
@@ -905,6 +918,7 @@ irregA : Str -> Str -> Adjective = --for irregular adjectives that have two form
   }
 };
 
+-- ADJECTIVE - MAKING OPER !
 mkAdjective : Str -> Adjective = --luckily most of the adjectives in the lexicon are relatively regular so we can use the regNoun oper for most of them
   \sg -> {
   s = table {
@@ -1019,6 +1033,7 @@ mkAdjective : Str -> Adjective = --luckily most of the adjectives in the lexicon
   } 
 } ;
 
+-- VERBS 
 Verb : Type = {s : Number => Person => Tense => Str} ;
 
  -- we need to take into consideration that the past participle is different in singular (persg) and plural personas (perpl)  
@@ -1037,14 +1052,18 @@ mkVerb : (stem, persg, perpl : Str) -> Verb
             Per => "olet_" + persg ;
             Pkp => "olit_" + persg
         } ;
-        Per3 => table {
-            Pres => case stem of {    --I'm aware this is not the most optimal way of doing this, I only realized some of the issues with 3rd person conjugations AFTER I managed to see the actual linearizations
+        Per3 => table {  -- this specific persona requires some more pattern matching ...
+            Pres => case stem of {    --using an oper to remove repetition at least a bit, probably there would have been a more optimal way too
               "o" => "on";
-              men + "e" => men + "ee";      
-              löy + "dä" => löy + "tää";
-              ri + "ko" => ri + "kkoo";
-              rakas + "ta" => rakas + "taa";
-              ymmär + "rä" => ymmär + "tää";
+              luk + "ee" => luk + doubleVowel(stem); 
+              nuk + "u" => nuk + doubleVowel(stem) ;
+              men + "e" => men + doubleVowel(stem);   
+              el + "ä" => el + doubleVowel(stem);   
+              löy + "dä" => löy + "t" + doubleVowel(stem);
+              rik + "o" => rik + "k" + doubleVowel(stem);
+              rakast + "a" => rakast + doubleVowel(stem);
+              ymmär + "rä" => ymmär + "t" + doubleVowel(stem);
+              tap + "pa" => tap + "p" + doubleVowel(stem) ;
               _ => stem
             }  ;
             Per => "on_" + persg ;
@@ -1076,9 +1095,10 @@ mkVerb : (stem, persg, perpl : Str) -> Verb
   = \inf, stem, persg, perpl -> 
       mkVerb stem persg perpl ;
 
-  -- regular verbs with predictable variations
+-- SMART - VERB OPER
   -- we will stick to the present and present past and past perfect tenses
   -- we need to take into consideration that the past participle is different in singular and plural personas
+  -- third person singular will pose some problems, some of them will be sorted in mkVerb
   smartVerb : Str -> Verb = \inf -> 
     case inf of {
    x + ("ata"|"ätä") => mkVerb (x + verbHelpVowelHarmony(inf) + verbHelpVowelHarmony(inf)) (x + verbHelpVowelHarmony(inf) + "nnut") (x + verbHelpVowelHarmony(inf) + "nneet") ;       --verbtype  4 ends in ata ätä, will go through changes in the stem   
@@ -1091,12 +1111,12 @@ mkVerb : (stem, persg, perpl : Str) -> Verb
    --pela  +  ("a" | "ä")  => regVerb inf     -- perusmuodon lopussa on a tai ä.  rikkoa, lukea, ymmärtää, mennä, ostaa, löytää, tappaa. elää, rakastaa, nukkua, opettaa, matkustaa, odottaa
    } ;
  
-  -- two-place verb with "case" as preposition; for transitive verbs, c=[], let's see if we will use this with Finnish...
+  -- two-place verb with "case" as preposition; for transitive verbs, c=[]
   Verb2 : Type = Verb ** {c : Str} ;
 
   be_Verb : Verb = irregVerb "olla" "o" "ollut" "olleet" ; ---s to be generalized
 
---- VERB AGREEMENT FUNCTION - HOW TO IMPLEMENT THIS?????
+--- VERB AGREEMENT FUNCTION - HOW TO IMPLEMENT THIS IN THE FUTURE?????
 --  agr2vform : Agreement -> Verbform = \a -> case a of {
 --   NAgr Sg Per1 Pres => \v -> v.s ! Sg ! Per1 ! Pres ;
 --   NAgr Sg Per2 Pres => \v -> v.s ! Sg ! Per2 ! Pres ;

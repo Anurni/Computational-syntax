@@ -9,7 +9,7 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
 
     Utt = {s : Str} ;
     S  = {s : Str} ;
-    VP = {verb : Verb ; compl : Str } ; ---s special case of Mini
+    VP = {verb : Verb ; compl : Str } ; --how to change compl so that it takes into account the number? 
     Comp = {s : Number => Case => Str} ;   
     AP = Adjective ;
     CN = Noun ;
@@ -27,8 +27,8 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
   UttS s = s ;
   UttNP np = {s = np.s ! Nom } ; 
 
-  PredVPS np vp = {
-    s = np.s ! Nom  ++ vp.verb.s ! np.n ! np.p ! Pkp ++ vp.compl
+  PredVPS np vp = {  -- WE COULD ALSO USE PRESENT PERFECT OR PAST PERFECT TENSES HERE (INSTEAD OF PRES, PER OR PKP)
+    s = np.s ! Nom  ++ vp.verb.s ! np.n ! np.p ! Pres ++ vp.compl -- in order to inflect in number, eventually should be --> vp.compl ! np.n
     } ;
 
   -- not working trial : 
@@ -77,12 +77,16 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
     -- the_Det = {s = "the" ; n = Sg} ;
     -- thePl_Det = {s = "the" ; n = Pl} ;
     
-    UseN n = n ;
+  UseN n = n ;
+
+  -- AdjCN ap cn = {
+  --     s = table {n => ap.s ! n ! Nom ++ cn.s ! n ! Nom}
+  --     } ;
     
-    AdjCN ap cn = {
-      s = table {
-        n => table { 
-          c => ap.s ! n ! c ++ cn.s ! n ! c  --number and case????
+  AdjCN ap cn = {
+    s = table {
+      n => table { 
+        c => ap.s ! Sg ! Nom ++ cn.s ! Sg ! Nom  --number and case????
           }
        }  
     } ;
@@ -168,6 +172,42 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
        n = Sg;
        p = Per3
        } ;
+       we_Pron = {
+       s = table {
+            Nom => "me";
+            Acc => "meidät";
+            Gen => "meidän";
+            Par => "meitä";
+            Ine => "meissä";
+            Ela => "meistä";
+            Ill => "meihin";
+            Ade => "meillä";
+            Abl => "meiltä";
+            All => "meille";
+            Ess => "meinä";
+            Tra => "meiksi";
+            Abe => "_" };
+      n = Pl;
+      p = Per1
+      } ;
+      you2_Pron = {
+       s = table {
+            Nom => "te";
+            Acc => "teidät";
+            Gen => "teidän";
+            Par => "teitä";
+            Ine => "teissä";
+            Ela => "teistä";
+            Ill => "teihin";
+            Ade => "teillä";
+            Abl => "teiltä";
+            All => "teille";
+            Ess => "teinä";
+            Tra => "teiksi";
+            Abe => "_" };
+      n = Pl;
+      p = Per2
+      } ;
     they_Pron = {
        s = table {
             Nom => "he";
@@ -280,7 +320,7 @@ lin woman_N = mkN "nainen" ;
 lin yellow_A = mkA "keltainen" ;
 lin young_A = mkA "nuori" "nuoret";
 
--- own added words, don't work since they are not in the abstract grammar
+-- own added words, won't work since they are not in the abstract grammar
 -- lin helmet_N = mkN "kypärä" ;
 -- lin pencil_N = mkN "kynä" ;
 -- lin cake_N = mkN "kakku";
