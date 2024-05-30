@@ -9,10 +9,10 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
 
     Utt = {s : Str} ;
     S  = {s : Str} ;
-    VP = {verb : Verb ; compl : Str } ; --how to change compl so that it takes into account the number? 
+    VP = {verb : Verb ; compl : Number => Case => Str } ; --how to change compl so that it takes into account the number? 
     Comp = {s : Number => Case => Str} ;   
     AP = Adjective ;
-    CN = {s : Number => Case => Str} ;    --Noun : Type = {s : Number => Case => Str} ;   --THIS ONE WAS CN : Noun ; 
+    CN = Noun ;    --Noun : Type = {s : Number => Case => Str} ;  
     NP, Pron = {s : Case => Str ; n : Number ; p : Person} ;   
     Det = {s : Str ; n : Number; cs : Case} ;
     Prep = {s : Str} ;
@@ -28,62 +28,28 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
   UttNP np = {s = np.s ! Nom } ; 
 
   PredVPS np vp = {  -- WE COULD ALSO USE PRESENT PERFECT OR PAST PERFECT TENSES HERE (INSTEAD OF PRES, PER OR PKP)
-    s = np.s ! Nom  ++ vp.verb.s ! np.n ! np.p ! Pres ++ vp.compl -- in order to inflect in number, eventually should be --> vp.compl ! np.n
+    s = np.s ! Nom  ++ vp.verb.s ! np.n ! np.p ! Pres ++ vp.compl ! np.n ! Nom 
     } ;
-
-  -- not working trial : 
---  PredVPS np vp = {
---  s = np.s ! Nom ++ agr2vform np.a vp.verb.s ++ vp.compl
---  } ;
-
-  -- another not working trial : 
-  --   PredVPS np vp = {
-  --    s = np.s ! Nom ++ vp.verb.s ! NAgr np.n np.c ++ vp.compl
-  --  } ;
-
-  -- WORKING VERSION, however produces wrong forms...
-  --  PredVPS np vp = {
-  --   s = np.s ! Nom  ++ vp.verb.s ! Sg ! Per3 ! Pres ++ vp.compl
-  --   } ;
 
    UseV v = {
       verb = v ;
-      compl = " " ;
+      compl = \\n,c => "" ;
       } ;
       
-  ComplV2 v2 np = {
+  ComplV2 v2 np = {  --love it
     verb = v2 ;
-    compl = v2.c ++ np.s ! Acc  -- NP object in the accusative
+    compl = \\n,c => v2.c  ++ np.s ! Par    -- NP object in the accusative   --was like this: --compl = v2.c ++ np.s ! Acc  
     } ;
       
   UseComp comp = {
       verb = be_Verb ;     -- the verb is the copula "be"
-      compl = comp.s ! Sg ! Nom
+      compl = comp.s      -- OLI NÄIN : ! Sg ! Nom 
       } ;
      
   CompAP ap = {s = ap.s};     --CompAP ap = {s = ap.s ! Sg ! Nom} ;  --CompAP ap = ap ;  --CompAP ap = {s = ap.s ! Sg ! Nom ! };
       
-  AdvVP vp adv =
-      vp ** {compl = vp.compl ++ adv.s} ;
-      
-  --NOT WORKING TRIAL: 
-  --DetCN det cn = {s = \\n,cs => det.s ++ cn.s ! n ! cs } ; --s = \\cs =>
-
--- NOT WORKING TRIAL: 
-  -- DetCN det cn = {
-  --     s = table {c => det.s ++ cn.s ! det.n ! c} ;
-  --     n = det.n ;
-  --     --cs = det.cs ;
-  -- };
-
--- NOT WORKING TRIAL:
---   DetCN det cn = {
---   s = table {
---     n => table {
---       cs => det.s ++ cn.s ! n ! cs
---     }
---   } 
--- };
+  AdvVP vp adv =  --sleep here
+      vp ** {compl = \\n,c => vp.compl ! n ! c ++ adv.s} ;
 
 --WORKING VERSION:
 DetCN det cn = {
@@ -100,26 +66,23 @@ DetCN det cn = {
   thePl_Det = {s = "" ; n = Pl ; cs = Nom} ;
     
   UseN n = n ;
-
-  -- AdjCN ap cn = {
-  --     s = table {n => ap.s ! n ! Nom ++ cn.s ! n ! Nom}
-  --     } ;
     
   AdjCN ap cn = {
     s = table {
       n => table { 
-        c => ap.s ! Sg ! Nom ++ cn.s ! Sg ! Nom  --number and case????
+        c => ap.s ! n ! c ++ cn.s ! n ! c  --number and case so that they are inflected correctly (altho I guess case will always be Nom(?))
           }
        }  
     } ;
 
     PositA a = a ;
 
-    PrepNP prep np = {s = np.s ! Gen ++ prep.s} ;  --old (wrong version) {s = prep.s ++ np.s ! Acc} ;
+    PrepNP prep np = {s = np.s ! Acc ++ prep.s} ;  
 
-    --in_Prep = {s = "in"} ;
-    --on_Prep = {s = "on"} ;
+    in_Prep = {s = "sisällä"} ; --lets see how these will work
+    on_Prep = {s = "päällä"} ; 
     with_Prep = {s = "kanssa"} ;
+
      me_Pron = {
        s = table {
             Nom => "minä";
@@ -255,13 +218,13 @@ DetCN det cn = {
 
 lin already_Adv = mkAdv "jo" ;
 lin animal_N = mkN "eläin" ;
-lin apple_N = mkN "omena" ; --REG
-lin baby_N = mkN "vauva" ; --REG
+lin apple_N = mkN "omena" ; 
+lin baby_N = mkN "vauva" ; 
 lin bad_A = mkA "paha" ;
 lin beer_N = mkN "olut" ;
 lin big_A = mkA "iso" ;
-lin bike_N = mkN "polkupyörä" ; --REG
---lin bird_N = mkN "lintu" ;
+lin bike_N = mkN "polkupyörä" ; 
+lin bird_N = mkN "lintu" ;
 lin black_A = mkA "musta" ;
 lin blood_N = mkN "veri" ;
 lin blue_A = mkA "sininen" ;
@@ -269,14 +232,14 @@ lin boat_N = mkN "vene" ;
 lin book_N = mkN "kirja" ;
 lin boy_N = mkN "poika" ;
 lin bread_N = mkN "leipä" ;
-lin break_V2 = mkV2 "rikkoa" ; --(mkV "break" "broke" "broken") ;
-lin buy_V2 = mkV2 "ostaa" ; --(mkV "buy" "bought" "bought") ;
+lin break_V2 = mkV2 "rikkoa" ; 
+lin buy_V2 = mkV2 "ostaa" ;
 lin car_N = mkN "auto" ;
 lin cat_N = mkN "kissa" ;
 lin child_N = mkN "lapsi" ;
 lin city_N = mkN "kaupunki" "kaupungit" ;
 lin clean_A = mkA "siisti" ;
---lin clever_A = mkA "fiksu" ;
+lin clever_A = mkA "fiksu" ;
 lin cloud_N = mkN "pilvi" ;
 lin cold_A = mkA "kylmä" ;
 lin come_V = mkV "tulla" ;
@@ -284,16 +247,16 @@ lin computer_N = mkN "tietokone" ;
 lin cow_N = mkN "lehmä" ;
 lin dirty_A = mkA "likainen" ;
 lin dog_N = mkN "koira" ;
-lin drink_V2 = mkV2 "juoda" ; --(mkV "drink" "drank" "drunk") ;
-lin eat_V2 = mkV2 "syödä" ;   --(mkV "eat" "ate" "eaten") ;
-lin find_V2 = mkV2 "löytää" "löydä" "löytänyt" "löytäneet" ; --(mkV "find" "found" "found") ;
+lin drink_V2 = mkV2 "juoda" ; 
+lin eat_V2 = mkV2 "syödä" ;   
+lin find_V2 = mkV2 "löytää" "löydä" "löytänyt" "löytäneet" ; --the order of forms given INF, STEM, PAST PARTICIPLE SG, PAST PARTICIPLE PL
 lin fire_N = mkN "tuli" ;
 lin fish_N = mkN "kala" ;
 lin flower_N = mkN "kukka" ;
 lin friend_N = mkN "ystävä" ;
 lin girl_N = mkN "tyttö" ;
 lin good_A = mkA "hyvä" ;
-lin go_V = mkV "mennä" ;      --"go" "went" "gone" ;
+lin go_V = mkV "mennä" ;      
 lin grammar_N = mkN "kielioppi" ;
 lin green_A = mkA "vihreä" ;
 lin heavy_A = mkA "painava" ;
@@ -306,7 +269,7 @@ lin kill_V2 = mkV2 "tappaa" ;
 --lin know_VS = mkVS (mkV "know" "knew" "known") ;
 lin language_N = mkN "kieli" ;
 lin live_V = mkV "elää" ;
-lin love_V2 = mkV2 "rakastaa" ; --(mkV "love") ;
+lin love_V2 = mkV2 "rakastaa" ; 
 lin man_N = mkN "mies" ;
 lin milk_N = mkN "maito" ;
 lin music_N = mkN "musiikki" ;
@@ -315,23 +278,23 @@ lin now_Adv = mkAdv "nyt" ;
 lin old_A = mkA "vanha" ;
 --lin paris_PN = mkPN "Paris" ;
 lin play_V = mkV "pelata" ;
-lin read_V2 = mkV2 "lukea" "lue" "lukenut" "lukeneet" ; --(mkV "read" "read" "read") ;
+lin read_V2 = mkV2 "lukea" "lue" "lukenut" "lukeneet" ; --the order of forms given INF, STEM, PAST PARTICIPLE SG, PAST PARTICIPLE PL
 lin ready_A = mkA "valmis" "valmiit" ;
 lin red_A = mkA "punainen" ;
 lin river_N = mkN "joki" ;
-lin run_V = mkV "juosta" "juokse" "juossut" "juosseet" ;
+lin run_V = mkV "juosta" "juokse" "juossut" "juosseet" ; --the order of forms given INF, STEM, PAST PARTICIPLE SG, PAST PARTICIPLE PL
 lin sea_N = mkN "meri" ;
-lin see_V2 = mkV2 "nähdä" "näe" "nähnyt" "nähneet"; --(mkV "see" "saw" "seen") ;
+lin see_V2 = mkV2 "nähdä" "näe" "nähnyt" "nähneet"; --the order of forms given INF, STEM, PAST PARTICIPLE SG, PAST PARTICIPLE PL
 lin ship_N = mkN "laiva" ;
 lin sleep_V = mkV "nukkua" ;
 lin small_A = mkA "pieni" "pienet" ;
 lin star_N = mkN "tähti" ;
 lin swim_V = mkV "uida" ;
-lin teach_V2 = mkV2  "opettaa" ;     --(mkV "teach" "taught" "taught") ;
+lin teach_V2 = mkV2  "opettaa" ;     
 lin train_N = mkN "juna" ;
 lin travel_V = mkV "matkustaa" ;
 lin tree_N = mkN "puu" ;
-lin understand_V2 = mkV2 "ymmärtää" "ymmärrä" "ymmärtänyt" "ymmärtäneet" ;       --(mkV "understand" "understood" "understood") ;
+lin understand_V2 = mkV2 "ymmärtää" "ymmärrä" "ymmärtänyt" "ymmärtäneet" ;       
 lin wait_V2 = mkV2 "odottaa" ;
 lin walk_V = mkV "kävellä" ;
 lin warm_A = mkA "lämmin" "lämpimät" ;
@@ -342,17 +305,17 @@ lin woman_N = mkN "nainen" ;
 lin yellow_A = mkA "keltainen" ;
 lin young_A = mkA "nuori" "nuoret";
 
--- own added words, won't work since they are not in the abstract grammar
--- lin helmet_N = mkN "kypärä" ;
--- lin pencil_N = mkN "kynä" ;
--- lin cake_N = mkN "kakku";
--- lin ticket_N = mkN "lappu" ;
--- lin cloudberry_N = mkN "lakka";
--- lin hat_N = mkN "hattu";
--- lin stairway_N = mkN "rappu";
--- lin cap_N = mkN "lakki";
--- lin button_N = mkN "nappi";
--- lin pacifier_N = mkN "tutti";
+-- own added words (have also been added to abstract grammar MicroLang)
+lin helmet_N = mkN "kypärä" ;
+lin pencil_N = mkN "kynä" ;
+lin cake_N = mkN "kakku";
+lin ticket_N = mkN "lappu" ;
+lin cloudberry_N = mkN "lakka";
+lin hat_N = mkN "hattu";
+lin stairway_N = mkN "rappu";
+lin cap_N = mkN "lakki";
+lin button_N = mkN "nappi";
+lin pacifier_N = mkN "tutti";
 
 ---------------------------
 -- Paradigms part ---------
@@ -371,7 +334,7 @@ oper
     mkA : Str -> A
     = \s -> lin A (mkAdjective s) ; --used to be lin A { s = s}
     mkA : Str -> Str -> A
-    = \sg,pl -> lin A (irregA sg pl) ; --irregular adjectives
+    = \sg,pl -> lin A (irregA sg pl) ; --irregular adjectives, there arent many
   } ;
 
 -- intransitive verbs

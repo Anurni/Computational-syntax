@@ -59,7 +59,7 @@ PositA    : A  -> AP ;              -- warm
 PrepNP    : Prep -> NP -> Adv ;     -- in the house
 
 -- Structural
-in_Prep   : Prep ;
+in_Prep   : Prep ;   --let's see if I will be able to comment these out for MicroLangFi
 on_Prep   : Prep ;
 with_Prep : Prep ;
 
@@ -166,5 +166,17 @@ fun
   woman_N : N ;
   yellow_A : A ;
   young_A : A ;
+
+  -- words I've added on my own and should also inflect correctly ! 
+  helmet_N : N ;
+  pencil_N : N ;
+  cake_N : N ;
+  ticket_N : N ;
+  cloudberry_N : N ;
+  hat_N : N ;
+  stairway_N : N ;
+  cap_N : N ;
+  button_N : N ;
+  pacifier_N : N ;
 
 }
