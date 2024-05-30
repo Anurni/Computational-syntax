@@ -1043,7 +1043,9 @@ mkVerb : (stem, persg, perpl : Str) -> Verb
     s = table {
       Sg => table {
         Per1 => table {
-            Pres => stem + "n" ;
+            Pres => case stem of {
+            "o" => "olen";
+              _ => stem + "n" };
             Per => "olen_" + persg ; --how to add space?
             Pkp => "olin_" + persg 
       } ;
@@ -1056,10 +1058,11 @@ mkVerb : (stem, persg, perpl : Str) -> Verb
             Pres => case stem of {    --using an oper to remove repetition at least a bit, probably there would have been a more optimal way too
               "o" => "on";
               luk + "ee" => luk + doubleVowel(stem); 
+              löy + "dä" => löy + "t" + doubleVowel(stem);
+              j + "uo" => j + "uo";
               nuk + "u" => nuk + doubleVowel(stem) ;
               men + "e" => men + doubleVowel(stem);   
               el + "ä" => el + doubleVowel(stem);   
-              löy + "dä" => löy + "t" + doubleVowel(stem);
               rik + "o" => rik + "k" + doubleVowel(stem);
               rakast + "a" => rakast + doubleVowel(stem);
               ymmär + "rä" => ymmär + "t" + doubleVowel(stem);

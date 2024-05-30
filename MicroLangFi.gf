@@ -12,9 +12,9 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
     VP = {verb : Verb ; compl : Str } ; --how to change compl so that it takes into account the number? 
     Comp = {s : Number => Case => Str} ;   
     AP = Adjective ;
-    CN = Noun ;
+    CN = {s : Number => Case => Str} ;    --Noun : Type = {s : Number => Case => Str} ;   --THIS ONE WAS CN : Noun ; 
     NP, Pron = {s : Case => Str ; n : Number ; p : Person} ;   
-    Det = {s : Str ; n : Number} ;
+    Det = {s : Str ; n : Number; cs : Case} ;
     Prep = {s : Str} ;
     V = {s : Number => Person => Tense => Str} ;
     V2 = Verb2 ;
@@ -66,16 +66,38 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
   AdvVP vp adv =
       vp ** {compl = vp.compl ++ adv.s} ;
       
-  --DetCN cn = {
-  --  s = \\c => cn.s ! det.n ;
-  --  } ;
+  --NOT WORKING TRIAL: 
+  --DetCN det cn = {s = \\n,cs => det.s ++ cn.s ! n ! cs } ; --s = \\cs =>
+
+-- NOT WORKING TRIAL: 
+  -- DetCN det cn = {
+  --     s = table {c => det.s ++ cn.s ! det.n ! c} ;
+  --     n = det.n ;
+  --     --cs = det.cs ;
+  -- };
+
+-- NOT WORKING TRIAL:
+--   DetCN det cn = {
+--   s = table {
+--     n => table {
+--       cs => det.s ++ cn.s ! n ! cs
+--     }
+--   } 
+-- };
+
+--WORKING VERSION:
+DetCN det cn = {
+    s = \\cs => det.s ++ cn.s ! det.n ! cs ;
+    n = det.n;
+    p = Per3;
+} ;
       
   UsePron p = p;
             
-    -- a_Det = {s = pre {"a"|"e"|"i"|"o" => "an" ; _ => "a"} ; n = Sg} ; --- a/an can get wrong
-    -- aPl_Det = {s = "" ; n = Pl} ;
-    -- the_Det = {s = "the" ; n = Sg} ;
-    -- thePl_Det = {s = "the" ; n = Pl} ;
+  a_Det = {s = "" ; n = Sg ; cs = Nom} ; ---will always be empty in Finnish since there are no articles per se
+  aPl_Det = {s = "" ; n = Pl ; cs = Nom} ;
+  the_Det = {s = "" ; n = Sg ; cs = Nom} ;
+  thePl_Det = {s = "" ; n = Pl ; cs = Nom} ;
     
   UseN n = n ;
 
@@ -93,7 +115,7 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
 
     PositA a = a ;
 
-    PrepNP prep np = {s = prep.s ++ np.s ! Acc} ;
+    PrepNP prep np = {s = np.s ! Gen ++ prep.s} ;  --old (wrong version) {s = prep.s ++ np.s ! Acc} ;
 
     --in_Prep = {s = "in"} ;
     --on_Prep = {s = "on"} ;
