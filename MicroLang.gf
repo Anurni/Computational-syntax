@@ -166,7 +166,6 @@ fun
   woman_N : N ;
   yellow_A : A ;
   young_A : A ;
-
   -- words I've added on my own and should also inflect correctly ! 
   helmet_N : N ;
   pencil_N : N ;

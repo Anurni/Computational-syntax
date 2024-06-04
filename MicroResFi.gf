@@ -2,8 +2,8 @@ resource MicroResFi = open Prelude in {
 
 param
   Number = Sg | Pl ;
-  Case = Nom | Acc | Gen | Par | Ine | Ela | Ill | Ade | Abl | All | Ess | Tra | Abe ; --left out two cases: instruktiivi and komitatiivi, lets see whether or not to include them later
-  Tense = Pres | Per | Pkp ;  --present (preesens), present perfect (perfekti) and past perfect (pluskvamperfekti)
+  Case = Nom | Acc | Gen | Par | Ine | Ela | Ill | Ade | Abl | All | Ess | Tra | Abe ; --left out two cases: instruktiivi and komitatiivi
+  Tense = Pres | Per | Pkp ;  --present (fi:preesens), present perfect (fi:perfekti) and past perfect (fi:pluskvamperfekti)
   Person = Per1 | Per2 | Per3 ;
 
   Agreement = NAgr Number Case ; -- nouns and adjectives agree with nouns in number and case
@@ -27,13 +27,13 @@ oper
     "y" => "ä";
     "ö" => "ä"
 } ;
-  otherVowelHarmony : Str -> Str ;   --another vowel harmony oper to help us with
+  otherVowelHarmony : Str -> Str ;   --another vowel harmony oper to help us
   otherVowelHarmony = \character -> case character of {
     x + ("a"|"o"|"u") + y => "a";
     _ => "ä"
   };
 
-  illativeVowelHarmony : Str -> Str ;
+  illativeVowelHarmony : Str -> Str ;  --needed for the illative case
   illativeVowelHarmony = \character -> case character of {
     x + "o" => "oo";
     x + "u" => "uu";
@@ -43,7 +43,7 @@ oper
     x + "ö" => "öö"
   };
 
-  pastParticipleVowelHarmony : Str -> Str ;
+  pastParticipleVowelHarmony : Str -> Str ; --needed for past participle vowel harmony
   pastParticipleVowelHarmony = \character -> case character of {
     "ä" => "y";
     "a" => "u"
@@ -193,8 +193,8 @@ oper
   regNoun : Str -> Noun = \sg -> mkNoun sg (sg + "t") ;
 
   -- smart paradigms (trying to implement at least the lemma-modifying KPT (strong-weak variation) rule ) to cover words like tyttö -> tytöt, kukka -> kukat, kielioppi -> kieliopit...
-  -- also some other nouns that are a bit "less regular", lapsi lapset, kasvis kasvikset, virhe virheet, punainen punaisen, olut oluet, mies miehet
-  --trying to implement noun case inflection for kpt nouns, aiming to cover similar words that are not even necessarily in the lexicon
+  -- also some other nouns that are a bit "less regular", lapsi  - lapset, virhe - virheet, punainen - punaisen, olut - oluet, mies - miehet
+  -- trying to implement noun case inflection for kpt nouns, aiming to cover similar words that are not even necessarily in the lexicon
   -- also added pattern matching for adjectives bc their inflections will be reached from this table
 smartNoun : Str -> Noun = \sg -> {
   s = table {
@@ -218,7 +218,7 @@ smartNoun : Str -> Noun = \sg -> {
         x + "es" => x + "ehen";
         x + "tu" => x + "tua" ; 
         x + ("i"|"t") => x + "en" ; --lapsi, olut
-        x + "s" => x + "ksen" ; --kasvis, kasvikset
+        x + "s" => x + "ksen" ; 
         x + "e" => x + "een" ; -- virhe, virheet
         x + "nen" => x + "sen";
         x + "in" => init sg + "men";
@@ -241,7 +241,7 @@ smartNoun : Str -> Noun = \sg -> {
         x + "es" => x + "ehen";
         x + "tu" => x + "nun" ; 
         x + ("i"|"t") => x + "en" ; --lapsi, olut
-        x + "s" => x + "ksen" ; --kasvis, kasvikset
+        x + "s" => x + "ksen" ; 
         x + "e" => x + "een" ; -- tietokoneen, veneen, 
         x + "nen" => x + "sen";
         x + "in" => init sg + "men";
@@ -281,7 +281,7 @@ smartNoun : Str -> Noun = \sg -> {
         x + "tu" => x + "nussa" ; 
         x + "i" => x + "ess" + vowelHarmony(last sg) ; --lapsi
         x + "t" => x + "ess" + otherVowelHarmony(sg);
-        x + "s" => x + "ksessa" ; --kasvis, kasvikset
+        x + "s" => x + "ksessa" ; 
         x + "e" => x + "eessä" ;  -- virhe, virheet
         x + "nen" => x + "sess" + otherVowelHarmony(sg);
         x + "in" => init sg + "mess" + otherVowelHarmony(sg);
@@ -305,7 +305,7 @@ smartNoun : Str -> Noun = \sg -> {
         x + "es" => x + "est" + otherVowelHarmony(sg);
         x + "t" => x + "ess" + otherVowelHarmony(sg);
         x + "i" => x + "est" + vowelHarmony(last sg) ; --lapsi
-        x + "s" => x + "ksesta" ; --kasvis, kasvikset
+        x + "s" => x + "ksesta" ; 
         x + "e" => x + "eestä" ; -- virhe, virheet
         x + "nen" => x + "sest" + otherVowelHarmony(sg);
         x + "in" => init sg + "mest" + otherVowelHarmony(sg);
@@ -342,8 +342,8 @@ smartNoun : Str -> Noun = \sg -> {
         x + "tu" => x + "nulla" ; 
         x + "es" => x + "ehell" + otherVowelHarmony(sg);
         x + "t" => x + "ell" + otherVowelHarmony(sg);
-        x + "i" => x + "ell" + vowelHarmony(last sg) ; --some nouns ending in i in singular (like lapsi, vesi,) we have a problem here tho bc some of these are regular (like muki), need to check this later
-        x + "s" => x + "ksella" ; --kasvis, kasvikset
+        x + "i" => x + "ell" + vowelHarmony(last sg) ; 
+        x + "s" => x + "ksella" ; 
         x + "e" => x + "eellä" ; -- virhe, virheet
         x + "nen" => x + "sell" + otherVowelHarmony(sg);
         x + "in" => init sg + "mell" + otherVowelHarmony(sg);
@@ -367,7 +367,7 @@ smartNoun : Str -> Noun = \sg -> {
         x + "es" => x + "ehelt" + otherVowelHarmony(sg);
         x + "t" => x + "elt" + otherVowelHarmony(sg);
         x + "i" => x + "elt" + vowelHarmony(last sg) ; 
-        x + "s" => x + "kselta" ; --kasvis, kasvikset
+        x + "s" => x + "kselta" ; 
         x + "e" => x + "eeltä" ; -- virhe, virheet
         x + "nen" => x + "selt" + otherVowelHarmony(sg);
         x + "in" => init sg + "melt" + otherVowelHarmony(sg);
@@ -390,7 +390,7 @@ smartNoun : Str -> Noun = \sg -> {
         x + "es" => x + "ehelle";
         x + "tu" => x + "nulle" ; 
         x + ("i"|"t") => x + "elle" ; --lapsi olut
-        x + "s" => x + "kselle" ; --kasvis, kasvikset
+        x + "s" => x + "kselle" ; 
         x + "e" => x + "eelle" ; -- virhe, virheet
         x + "nen" => x + "selle";
         x + "in" => init sg + "melle";
@@ -423,7 +423,7 @@ smartNoun : Str -> Noun = \sg -> {
         x + "es" => x + "eheksi";
         x + "tu" => x + "nuksi" ; 
         x + ("i"|"t") => x + "eksi" ; --lapsi, olut
-        x + "s" => x + "kseksi" ; --kasvis, kasvikset
+        x + "s" => x + "kseksi" ; 
         x + "e" => x + "eeksi" ; -- virhe, virheet
         x + "nen" => x + "seksi";
         x + "in" => init sg + "meksi";
@@ -446,8 +446,8 @@ smartNoun : Str -> Noun = \sg -> {
         x + "es" => x + "ehett" + otherVowelHarmony(sg);
         x + "tu" => x + "nutta" ; 
         x + "t" => x + "ett" + otherVowelHarmony(sg);
-        x + "i" => x + "ett" + vowelHarmony(last sg) ; --some nouns ending in i in singular (like lapsi, vesi,) we have a problem here tho bc some of these are regular (like muki), need to check this
-        x + "s" => x + "ksetta" ; --kasvis, kasvikset
+        x + "i" => x + "ett" + vowelHarmony(last sg) ; 
+        x + "s" => x + "ksetta" ; 
         x + "e" => x + "eettä" ; -- virhe, virheet
         x + "nen" => x + "sett" + otherVowelHarmony(sg);
         x + "in" => init sg + "mettä";
@@ -478,7 +478,7 @@ smartNoun : Str -> Noun = \sg -> {
       x + "in" => init sg + "met";
       _ => (regNoun sg).s ! Pl ! Nom 
       };
-      Acc => case sg of { --would there be a way of avoiding this repetition since nom and acc inflections are the same?
+      Acc => case sg of { --would there be a way of avoiding this repetition since nom and acc inflections are the same? Todo for the future improvements.
       x + "akku" => x + "akut" ; 
       x + "attu" => x + "atut" ; 
       x + "appu" => x + "aput" ; 
@@ -530,7 +530,7 @@ smartNoun : Str -> Noun = \sg -> {
       x + "es" => x + "ehiss" + otherVowelHarmony(sg);
       x + "tu" => x + "tuja" ; 
       x + "t" => x + "it" + otherVowelHarmony(sg);
-      x + "i" => x + "i" + vowelHarmony(last sg) ; --some nouns ending in i in singular (like lapsi, vesi,) we have a problem here tho bc some of these are regular (like muki), need to check this
+      x + "i" => x + "i" + vowelHarmony(last sg) ; 
       x + "s" => x + "ksia" ; --kasvis, kasvikset
       x + "e" => x + "eitä" ; -- virhe, virheet
       x + "nen" => x + "si" + otherVowelHarmony(sg);
@@ -554,8 +554,8 @@ smartNoun : Str -> Noun = \sg -> {
       x + "tu" => x + "nuissa" ; 
       x + "es" => x + "ehist" + otherVowelHarmony(sg);
       x + "t" => x + "iss" + otherVowelHarmony(sg);
-      x + "i" => x + "iss" + vowelHarmony(last sg) ; --some nouns ending in i in singular (like lapsi, vesi,) we have a problem here tho bc some of these are regular (like muki), need to check this
-      x + "s" => x + "ksissa" ; --kasvis, kasvikset
+      x + "i" => x + "iss" + vowelHarmony(last sg) ; 
+      x + "s" => x + "ksissa" ; 
       x + "e" => x + "eissä" ;
       x + "nen" => x + "siss" + otherVowelHarmony(sg);
       x + "in" => init sg + "miss" + otherVowelHarmony(sg);
@@ -578,8 +578,8 @@ smartNoun : Str -> Noun = \sg -> {
       x + "tu" => x + "nuista" ; 
       x + "es" => x + "ehist" + otherVowelHarmony(sg);
       x + "t" => x + "ist" + otherVowelHarmony(sg);
-      x + "i" => x + "ist" + vowelHarmony(last sg) ; --some nouns ending in i in singular (like lapsi, vesi,) we have a problem here tho bc some of these are regular (like muki), need to check this
-      x + "s" => x + "ksista" ; --kasvis, kasvikset
+      x + "i" => x + "ist" + vowelHarmony(last sg) ; 
+      x + "s" => x + "ksista" ; 
       x + "e" => x + "eistä" ;
       x + "nen" => x + "sist" + otherVowelHarmony(sg);
       x + "in" => init sg + "mist" + otherVowelHarmony(sg);
@@ -602,8 +602,8 @@ smartNoun : Str -> Noun = \sg -> {
       x + "tu" => x + "tuihin" ; 
       x + "t" => x + "ihin";
       x + "ttö" => sg + "töihin" ; --tt -> i
-      x + "i" => x + "in" ; --some nouns ending in i in singular (like lapsi, vesi,) we have a problem here tho bc some of these are regular (like muki), need to check this
-      x + "s" => x + "ksiin" ; --kasvis, kasvikset
+      x + "i" => x + "in" ; 
+      x + "s" => x + "ksiin" ; 
       x + "e" => x + "eisiin" ; -- virhe, virheet
       x + "uu" => sg + "uihin" ;
       x + "nen" => x + "siin" ;
@@ -628,7 +628,7 @@ smartNoun : Str -> Noun = \sg -> {
       x + "es" => x + "ehill" + otherVowelHarmony(sg);
       x + "t" => x + "ill" + otherVowelHarmony(sg);
       x + "i" => x + "ill" + vowelHarmony(last sg) ; 
-      x + "s" => x + "ksilla" ; --kasvis, kasvikset
+      x + "s" => x + "ksilla" ; 
       x + "e" => x + "eillä" ; -- veneillä
       x + "uu" => sg + "uilla" ;
       x + "nen" => x + "sill" + otherVowelHarmony(sg);
@@ -653,7 +653,7 @@ smartNoun : Str -> Noun = \sg -> {
       x + "es" => x + "ehilt" + otherVowelHarmony(sg);
       x + "t" => x + "ilt" + otherVowelHarmony(sg);
       x + "i" => x + "ilt" + vowelHarmony(last sg) ; 
-      x + "s" => x + "ksilta" ; --kasvis, kasvikset
+      x + "s" => x + "ksilta" ; 
       x + "e" => x + "eiltä" ; -- veneillä
       x + "uu" => sg + "uilta" ;
       x + "nen" => x + "silt" + otherVowelHarmony(sg);
@@ -677,7 +677,7 @@ smartNoun : Str -> Noun = \sg -> {
       x + "tu" => x + "nuille" ; 
       x + ("i"|"t") => x + "ille" ; --
       x + "ttö" => x + "töille" ; --tt -> i
-      x + "s" => x + "ksille" ; --kasvis, kasvikset
+      x + "s" => x + "ksille" ; 
       x + "e" => x + "eille" ; -- veneillä
       x + "uu" => sg + "uille" ;
       x + "nen" => x + "sille";
@@ -702,7 +702,7 @@ smartNoun : Str -> Noun = \sg -> {
       x + "es" => x + "ehin" + otherVowelHarmony(sg);
       x + "t" => x + "in" + otherVowelHarmony(sg);
       x + "i" => x + "in" + vowelHarmony(last sg) ; 
-      x + "s" => x + "ina" ; --kasvis, kasvikset
+      x + "s" => x + "ina" ; 
       x + "e" => x + "einä" ; -- veneillä
       x + "uu" => sg + "uina" ;
       x + "nen" => x + "sin" + otherVowelHarmony(sg);
@@ -726,7 +726,7 @@ smartNoun : Str -> Noun = \sg -> {
       x + "es" => x + "ehiksi";
       x + "tu" => x + "nuiksi" ; 
       x + ("i"|"t") => x + "iksi" ; -- lapsiksi, tuliksi, kieliksi, oluiksi
-      x + "s" => x + "ksiksi" ; -- kasviksiksi
+      x + "s" => x + "ksiksi" ; 
       x + "e" => x + "eiksi" ; -- veneiksi
       x + "uu" => sg + "uiksi" ; --puiksi
       x + "nen" => x + "siksi";
@@ -751,7 +751,7 @@ smartNoun : Str -> Noun = \sg -> {
       x + "es" => x + "ehitt" + otherVowelHarmony(sg);
       x + "t" => x + "itt" + otherVowelHarmony(sg);
       x + "i" => x + "itt" + vowelHarmony(last sg) ; --oluitta, lapsitta
-      x + "s" => x + "sitta" ; --kasvis, kasvikset
+      x + "s" => x + "sitta" ; 
       x + "e" => x + "eittä" ; -- veneillä
       x + "uu" => sg + "uitta" ;
       x + "nen" => x + "sitt" + otherVowelHarmony(sg);
@@ -762,15 +762,17 @@ smartNoun : Str -> Noun = \sg -> {
   }
 };
 
+-- ADJECTIVES : 
 Adjective : Type = {s : Number => Case => Str} ;   
 
+-- irregular adjective making oper
 irregA : Str -> Str -> Adjective = --for irregular adjectives that have two forms in the lexicon
 \sg,pl -> {
   s = table {
     Sg => table {
         Nom => sg ;
         Acc => case sg of {
-          x + "ri" => x + "ren"; --very specific cases from our lexicon...has its limitations! Could have just given all the forms too.
+          x + "ri" => x + "ren"; --very specific cases from our lexicon...has its limitations! Could have just given all the forms too. 
           x + "ni" => x + "nen";
           x + "is" => x + "iin";
           x + "si" => x + "den";
@@ -945,7 +947,7 @@ irregA : Str -> Str -> Adjective = --for irregular adjectives that have two form
 };
 
 -- ADJECTIVE - MAKING OPER !
-mkAdjective : Str -> Adjective = --luckily most of the adjectives in the lexicon are relatively regular so we can use the regNoun oper for most of them
+mkAdjective : Str -> Adjective = --luckily most of the adjectives in the lexicon are relatively regular so we can use the regNoun oper for most of them :-)
   \sg -> {
   s = table {
     Sg => table {
@@ -1062,8 +1064,9 @@ mkAdjective : Str -> Adjective = --luckily most of the adjectives in the lexicon
 -- VERBS 
 Verb : Type = {s : Number => Person => Tense => Str} ;
 
- -- we need to take into consideration that the past participle is different in singular (persg) and plural personas (perpl)  
+ -- we need to take into consideration that the past participle is different in singular (persg) and plural personas (perpl)!  
 
+-- VERB-MAKING OPER:
 mkVerb : (stem, persg, perpl : Str) -> Verb
   = \stem, persg, perpl -> {
     s = table {
@@ -1072,7 +1075,7 @@ mkVerb : (stem, persg, perpl : Str) -> Verb
             Pres => case stem of {
             "o" => "olen";
               _ => stem + "n" };
-            Per => "olen_" + persg ; --how to add space?
+            Per => "olen_" + persg ; --how to add space? Olen is an auxiliary (like English have)
             Pkp => "olin_" + persg 
       } ;
         Per2 => table {
@@ -1104,12 +1107,18 @@ mkVerb : (stem, persg, perpl : Str) -> Verb
       };
       Pl => table {
         Per1 => table {
-            Pres => stem + "mme" ;
+            Pres => case stem of {
+              "o" => "olemme";
+               _ => stem + "mme" 
+              };
             Per => "olemme_" + perpl ;
             Pkp => "olimme_" + perpl
         } ;
         Per2 => table {
-            Pres => stem + "tte" ;
+            Pres => case stem of {
+              "o" => "olette";
+               _ => stem + "tte" 
+            };
             Per => "olette_" +  perpl ;
             Pkp => "olitte_" + perpl
         } ;
@@ -1137,7 +1146,7 @@ mkVerb : (stem, persg, perpl : Str) -> Verb
 -- SMART - VERB OPER
   -- we will stick to the present and present past and past perfect tenses
   -- we need to take into consideration that the past participle is different in singular and plural personas
-  -- third person singular will pose some problems, some of them will be sorted in mkVerb
+  -- third person conjugation 'issues' will be sorted in mkVerb
   smartVerb : Str -> Verb = \inf -> 
     case inf of {
    x + ("ata"|"ätä") => mkVerb (x + verbHelpVowelHarmony(inf) + verbHelpVowelHarmony(inf)) (x + verbHelpVowelHarmony(inf) + "nnut") (x + verbHelpVowelHarmony(inf) + "nneet") ;       --verbtype  4 ends in ata ätä, will go through changes in the stem   
@@ -1155,7 +1164,7 @@ mkVerb : (stem, persg, perpl : Str) -> Verb
 
   be_Verb : Verb = irregVerb "olla" "o" "ollut" "olleet" ; ---s to be generalized
 
---- VERB AGREEMENT FUNCTION - HOW TO IMPLEMENT THIS IN THE FUTURE?????
+--- VERB AGREEMENT FUNCTION - HOW TO IMPLEMENT THIS IN THE FUTURE?
 --  agr2vform : Agreement -> Verbform = \a -> case a of {
 --   NAgr Sg Per1 Pres => \v -> v.s ! Sg ! Per1 ! Pres ;
 --   NAgr Sg Per2 Pres => \v -> v.s ! Sg ! Per2 ! Pres ;

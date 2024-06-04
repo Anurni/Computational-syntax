@@ -9,7 +9,7 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
 
     Utt = {s : Str} ;
     S  = {s : Str} ;
-    VP = {verb : Verb ; compl : Number => Case => Str } ; --how to change compl so that it takes into account the number? 
+    VP = {verb : Verb ; compl : Number => Case => Str } ; 
     Comp = {s : Number => Case => Str} ;   
     AP = Adjective ;
     CN = Noun ;    --Noun : Type = {s : Number => Case => Str} ;  
@@ -27,7 +27,7 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
   UttS s = s ;
   UttNP np = {s = np.s ! Nom } ; 
 
-  PredVPS np vp = {  -- WE COULD ALSO USE PRESENT PERFECT OR PAST PERFECT TENSES HERE (INSTEAD OF PRES, PER OR PKP)
+  PredVPS np vp = {  -- WE COULD ALSO USE PRESENT PERFECT OR PAST PERFECT TENSES HERE (INSTEAD OF PRES: PER OR PKP) :)
     s = np.s ! Nom  ++ vp.verb.s ! np.n ! np.p ! Pres ++ vp.compl ! np.n ! Nom 
     } ;
 
@@ -38,15 +38,15 @@ concrete MicroLangFi of MicroLang = open MicroResFi, Prelude in {
       
   ComplV2 v2 np = {  --love it
     verb = v2 ;
-    compl = \\n,c => v2.c  ++ np.s ! Par    -- NP object in the accusative   --was like this: --compl = v2.c ++ np.s ! Acc  
+    compl = \\n,c => v2.c  ++ np.s ! Par    -- NP object in the accusative  
     } ;
       
   UseComp comp = {
       verb = be_Verb ;     -- the verb is the copula "be"
-      compl = comp.s      -- OLI NÄIN : ! Sg ! Nom 
+      compl = comp.s      
       } ;
      
-  CompAP ap = {s = ap.s};     --CompAP ap = {s = ap.s ! Sg ! Nom} ;  --CompAP ap = ap ;  --CompAP ap = {s = ap.s ! Sg ! Nom ! };
+  CompAP ap = {s = ap.s};     
       
   AdvVP vp adv =  --sleep here
       vp ** {compl = \\n,c => vp.compl ! n ! c ++ adv.s} ;
@@ -79,7 +79,7 @@ DetCN det cn = {
 
     PrepNP prep np = {s = np.s ! Acc ++ prep.s} ;  
 
-    in_Prep = {s = "sisällä"} ; --lets see how these will work
+    in_Prep = {s = "sisällä"} ; 
     on_Prep = {s = "päällä"} ; 
     with_Prep = {s = "kanssa"} ;
 
@@ -305,7 +305,7 @@ lin woman_N = mkN "nainen" ;
 lin yellow_A = mkA "keltainen" ;
 lin young_A = mkA "nuori" "nuoret";
 
--- own added words (have also been added to abstract grammar MicroLang)
+-- own added words (have also been added to abstract grammar MicroLang!)
 lin helmet_N = mkN "kypärä" ;
 lin pencil_N = mkN "kynä" ;
 lin cake_N = mkN "kakku";
